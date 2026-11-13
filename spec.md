@@ -5,8 +5,9 @@
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-| Lê Quý Toàn | 2A202603941 | Viết `spec.md` §1–§7: bảng kịch bản, lập luận khi AI sai, mức tự chủ theo cost-of-error; câu chữ AI nguyên văn cho 11 kịch bản và các thẻ duyệt / biên nhận; dựng `prototype/index.html` màn học viên + màn TA với rail mức tự chủ áp dụng sống, nhật ký quyết định, chú thích HAX/PAIR 1–7; ảnh đánh số `anh-1.png`, `anh-2.png`; kiểm thử bấm end-to-end desktop/tablet/mobile |
-| Đàm Hồng Thái | 2A202603927 | Khởi tạo repo nhóm + `README.md`; dàn ý `spec.md` của nhóm; bảng phân công `3-tasks.md` (PR #1) |
+| Đàm Hồng Thái | 2A202603927 | **Người kịch bản** (mạnh viết, suy luận rủi ro) — giữ §1–§2: lát cắt & phạm vi, 11 kịch bản rủi ro phủ đủ 4 lớp ①②③④, lập luận chọn 2 kịch bản đắt nhất S3/S4; dựng ảnh đánh số `anh-1.png` (màn học viên, ca S3 từ đầu tới thẻ duyệt) |
+| Vũ Lương Duy | 2A202603945 | **Người quyết định** (mạnh lập luận, phản biện) — giữ §3–§4: khi AI sai người dùng thấy gì, quyết định hỏi lại / trả lời kèm giới hạn / chuyển người, loại lỗi, mức tự chủ theo cost-of-error, tool khó xếp nhất và thử mức; trả lời ca lạ tại demo (§7) |
+| Lê Quý Toàn | 2A202603941 | **Người prototype** (mạnh công cụ, UI) — giữ §5–§6: dựng `prototype/index.html` màn học viên + màn TA với rail mức tự chủ áp dụng sống và nhật ký quyết định, kiểm thử bấm end-to-end desktop/tablet/mobile; dựng ảnh đánh số `anh-2.png` (màn TA); map HAX/PAIR 1–7 vào màn hình; tiêu chí Pass/Fail và chấm thử thiết kế |
 
 ## §1. Lát cắt & phạm vi
 
@@ -79,7 +80,7 @@ Phủ đủ 4 lớp: ① S4, S7, S8 · ② S1, S2, S6, S8, S11 · ③ S3, S5, S1
 | `chuyen_TA` | Tự làm | — | Đảo được; chuyển thừa chỉ tốn công TA; chờ duyệt thì mất đường thoát duy nhất sang người lúc ngoài giờ; đổi lại phải nói thật giờ có người nhận | Cần duyệt: loại vì việc rẻ và đảo được mà bắt bấm thêm. Cấm: loại vì Study mode gốc không có ai để chuyển — đây chính là chỗ phải thiết kế |
 | `dang_FAQ` | Cần người duyệt | **TA** duyệt; thấy bản nháp + căn cứ + cờ nghi lỗi; quá hạn 30 phút → nhắc giảng viên, không tự đăng | Gỡ được nhưng cả lớp đã đọc — hại lan rộng không thu hồi (S4, S5); chờ TA duyệt rẻ hơn một lần cả lớp học sai | Tự làm + gỡ: loại vì gỡ không cứu người đã đọc. Cấm: loại vì mất kênh chia sẻ câu hỏi hay |
 
-- **Tool khó xếp nhất: `goi_y_bai_tap`.** Người dựng prototype chọn *tự làm + hoàn tác* cho nhanh lúc 22:47; người viết câu chữ chọn *cấm* với bài đang mở cho an toàn tuyệt đối; người giữ kịch bản chọn *cần người duyệt*. Cái giá mỗi phía trỏ về §2: tự làm → S3/S6 rò đáp án không đảo được; cấm → S6 học viên kẹt không còn giúp đỡ hợp lệ, đi chép nơi khác; duyệt → thêm một bấm nhưng người chịu hại được đọc nguyên văn trước khi nhận. **Chốt:** cần người duyệt = chính học viên, kèm tách bước và luật cứng dưới đây; rail cho đổi mức sống để demo thấy cái giá của từng phía.
+- **Tool khó xếp nhất: `goi_y_bai_tap`.** Người prototype (Lê Quý Toàn) chọn *tự làm + hoàn tác* cho nhanh lúc 22:47; người quyết định (Vũ Lương Duy) chọn *cấm* với bài đang mở cho an toàn tuyệt đối; người kịch bản (Đàm Hồng Thái) chọn *cần người duyệt*. Cái giá mỗi phía trỏ về §2: tự làm → S3/S6 rò đáp án không đảo được; cấm → S6 học viên kẹt không còn giúp đỡ hợp lệ, đi chép nơi khác; duyệt → thêm một bấm nhưng người chịu hại được đọc nguyên văn trước khi nhận. **Chốt:** cần người duyệt = chính học viên, kèm tách bước và luật cứng dưới đây; rail cho đổi mức sống để demo thấy cái giá của từng phía.
 - **Thử mức đã đặt trên S3 + S4 + S1 (ba câu hỏi):**
   - *Cái sai có bị chặn không?* S3: không tồn tại nút xác nhận đáp số; gợi ý chỉ bước đầu và phải duyệt mới gửi. S4: câu chưa kiểm không tự lên FAQ; báo cáo nghi lỗi tới TA kèm cờ.
   - *Còn việc nào làm khi lẽ ra phải hỏi?* Không: mọi hành động gửi đi hoặc qua duyệt (gợi ý, FAQ) hoặc nằm ở tool đảo được (chuyển TA, chỉ đọc).
@@ -118,4 +119,4 @@ Phủ đủ 4 lớp: ① S4, S7, S8 · ② S1, S2, S6, S8, S11 · ③ S3, S5, S1
 ## §7. Demo
 
 - **Ca lạ nhận tại demo:** bộ phân loại từ khoá khớp kịch bản thì chạy flow đúng mức đã đặt; không khớp thì vào **đường an toàn**: chip "Không có căn cứ · dừng", nói thẳng "không đoán", hỏi lại một câu kèm lựa chọn, và nút chuyển TA (gửi ngay hay chờ duyệt theo mức `chuyen_TA`). Đã bấm thử ca ngoài phạm vi "đổi mật khẩu tài khoản trường" → từ chối hữu ích + chuyển TA; ca gần nghĩa "p-value buổi 7" → khớp S7, giới hạn một câu vì buổi chưa mở.
-- **Sau ca lạ nhóm không đổi mức tự chủ:** đường an toàn đã tôn trọng mức `chuyen_TA` tự làm và luật cứng bài đang mở; chỉ bổ sung từ khoá nếu ca lạ lộ mẫu câu hỏi mới. Mỗi thành viên trình bày một phần theo bảng phân công đầu bài và giải thích được phần có tên mình.
+- **Sau ca lạ nhóm không đổi mức tự chủ:** đường an toàn đã tôn trọng mức `chuyen_TA` tự làm và luật cứng bài đang mở; chỉ bổ sung từ khoá nếu ca lạ lộ mẫu câu hỏi mới. **Phân công demo theo bảng thành viên:** Đàm Hồng Thái trình bày §1–§2 + `anh-1.png`; Vũ Lương Duy trình bày §3–§4 và trực tiếp trả lời ca lạ; Lê Quý Toàn trình bày §5–§6 + `anh-2.png` và trỏ HAX/PAIR 1–7 trên màn hình. Mỗi thành viên giải thích được phần có tên mình.
