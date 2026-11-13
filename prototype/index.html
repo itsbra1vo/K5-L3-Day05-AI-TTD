@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trợ lý học bài tối muộn · T2 Giáo dục · LAB5 prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0c1e; --bg2:#0f1230; --surface:rgba(148,163,255,.055); --surface2:rgba(148,163,255,.10);
+  --overlay:rgba(16,19,48,.92); --scrim:rgba(4,6,18,.66);
+  --line:rgba(148,163,255,.18); --line2:rgba(148,163,255,.30);
+  --text:#e9ebfa; --mut:#9aa3cc; --dim:#6f78a6;
+  --indigo:#7c83ff; --blue:#5b9dff; --teal:#2fd6c3; --amber:#ffb84d; --magenta:#ef7ae8;
+  --ok:#3ddc97; --warn:#ffc24d; --bad:#ff7a7a; --info:#6cb8ff;
+  --lamp:#ffd9a0; --me:#3d47b8;
+  --okbg:rgba(61,220,151,.12); --warnbg:rgba(255,194,77,.13); --badbg:rgba(255,122,122,.12); --infobg:rgba(108,184,255,.12); --magbg:rgba(239,122,232,.12);
+  --shadow:0 18px 50px rgba(3,5,18,.5); --r:16px;
+  --sb-track:rgba(148,163,255,.07); --sb-thumb:rgba(124,131,255,.42); --sb-hover:rgba(255,184,77,.65);
+}
+[data-theme="light"]{
+  --bg:#f2f1fb; --bg2:#e9e8f8; --surface:rgba(255,255,255,.78); --surface2:rgba(255,255,255,.95);
+  --overlay:rgba(255,255,255,.96); --scrim:rgba(30,32,70,.35);
+  --line:rgba(60,66,150,.16); --line2:rgba(60,66,150,.30);
+  --text:#1c2044; --mut:#5a6088; --dim:#8389b0;
+  --indigo:#4f52d8; --blue:#2f6fd8; --teal:#0f9e8e; --amber:#c07a12; --magenta:#b93fae;
+  --ok:#0e9e63; --warn:#b07c0a; --bad:#d24545; --info:#2a72c4;
+  --lamp:#a86a10; --me:#4a53c9;
+  --okbg:rgba(14,158,99,.10); --warnbg:rgba(176,124,10,.10); --badbg:rgba(210,69,69,.09); --infobg:rgba(42,114,196,.09); --magbg:rgba(185,63,174,.09);
+  --shadow:0 14px 40px rgba(40,44,110,.14);
+  --sb-track:rgba(60,66,150,.07); --sb-thumb:rgba(79,82,216,.35); --sb-hover:rgba(192,122,18,.6);
+}
+*{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--sb-thumb) var(--sb-track)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--sb-track);border-radius:8px}
+::-webkit-scrollbar-thumb{background:var(--sb-thumb);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--sb-hover);border:2px solid transparent;background-clip:padding-box}
+html,body{margin:0;padding:0}
+body{font-family:"Be Vietnam Pro","Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14.5px;line-height:1.55;min-height:100vh}
+.bg{position:fixed;inset:0;z-index:-1;background:
+  radial-gradient(1100px 700px at 82% -10%,rgba(124,131,255,.20),transparent 60%),
+  radial-gradient(900px 650px at -8% 108%,rgba(47,214,195,.14),transparent 60%),
+  radial-gradient(700px 500px at 55% 115%,rgba(255,184,77,.12),transparent 60%),
+  linear-gradient(160deg,var(--bg) 0%,var(--bg2) 55%,var(--bg) 100%)}
+.bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;animation:drift 26s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:420px;height:420px;left:60%;top:-140px;background:radial-gradient(circle,rgba(124,131,255,.5),transparent 70%)}
+.bg i:nth-child(2){width:380px;height:380px;left:-120px;top:45%;background:radial-gradient(circle,rgba(47,214,195,.4),transparent 70%);animation-delay:-9s}
+.bg i:nth-child(3){width:340px;height:340px;left:45%;top:78%;background:radial-gradient(circle,rgba(255,184,77,.35),transparent 70%);animation-delay:-17s}
+.bg::after{content:"";position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-60px,50px) scale(1.15)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.bg i{animation:none}.msg,.qcard,.tile{animation:none!important}}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:6px}
+code{font-family:ui-monospace,"Cascadia Code",Consolas,monospace;font-size:.92em;background:var(--surface2);padding:1px 6px;border-radius:6px;border:1px solid var(--line)}
+.hidden{display:none!important}
+svg.ic{width:16px;height:16px;flex:none;vertical-align:-3px}
+
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 20px;padding-top:calc(12px + env(safe-area-inset-top));background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand .logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--indigo),var(--blue) 55%,var(--teal));color:#fff;box-shadow:0 6px 18px rgba(124,131,255,.35);flex:none}
+.brand h1{font-size:15.5px;margin:0;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+.brand .sub{font-size:11.5px;color:var(--mut);margin:0}
+.clockchip{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;border:1px solid var(--line2);background:var(--surface);font-size:12.5px;font-weight:600;white-space:nowrap}
+.clockchip .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber);animation:pulse 2.4s infinite}
+.clockchip.inside .dot{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.tabs{display:flex;gap:6px;margin-left:auto}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 15px;font-size:13px;font-weight:600;color:var(--mut);display:flex;align-items:center;gap:7px;transition:.18s}
+.tab:hover{border-color:var(--line2);color:var(--text)}
+.tab.on{background:linear-gradient(135deg,var(--indigo),var(--blue));border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(91,157,255,.3)}
+.tab .badge{background:var(--amber);color:#20160a;border-radius:999px;font-size:11px;font-weight:800;padding:0 7px;min-width:19px;text-align:center}
+.iconbtn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--mut);transition:.18s}
+.iconbtn:hover{color:var(--amber);border-color:var(--line2);transform:translateY(-1px)}
+
+.shell{max-width:1560px;margin:0 auto;padding:18px 20px 60px;display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:18px;align-items:start}
+.stage{min-width:0;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(12px);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.card-h h2{font-size:14px;margin:0;font-weight:700;letter-spacing:.1px}
+.card-h .hint{font-size:11.5px;color:var(--mut);margin-left:auto}
+
+.student{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.chatcard{display:flex;flex-direction:column;min-height:640px;max-height:calc(100vh - 150px)}
+.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+.msg{animation:fadeUp .28s ease both;max-width:100%}
+.msg.me{align-self:flex-end;max-width:82%}
+.msg.me .bubble{background:linear-gradient(135deg,var(--me),color-mix(in srgb,var(--me) 70%,var(--blue)));color:#fff;padding:10px 14px;border-radius:16px 16px 4px 16px;font-size:14px;box-shadow:0 6px 18px rgba(61,71,184,.3)}
+.msg .meta{font-size:11px;color:var(--dim);margin-top:4px;text-align:right}
+.msg.ai .bubble,.msg.ta .bubble{background:var(--surface2);border:1px solid var(--line);padding:12px 14px;border-radius:16px 16px 16px 4px}
+.msg.ta .bubble{border-color:color-mix(in srgb,var(--teal) 45%,transparent);background:color-mix(in srgb,var(--teal) 8%,var(--surface2))}
+.who{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--mut);margin-bottom:7px}
+.who .avatar{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,var(--indigo),var(--teal));color:#fff;flex:none}
+.msg.ta .who .avatar{background:linear-gradient(135deg,var(--teal),var(--ok))}
+.aitag{font-size:10px;font-weight:800;letter-spacing:.6px;padding:1px 7px;border-radius:999px;background:var(--magbg);color:var(--magenta);border:1px solid color-mix(in srgb,var(--magenta) 40%,transparent)}
+.msg.ta .aitag{background:var(--okbg);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.conf{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;border:1px solid}
+.c-high{background:var(--okbg);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.c-mid{background:var(--warnbg);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.c-low{background:var(--warnbg);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.c-none{background:var(--badbg);color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.c-rule{background:var(--magbg);color:var(--magenta);border-color:color-mix(in srgb,var(--magenta) 40%,transparent)}
+.body{font-size:14px}
+.body p{margin:0 0 8px}.body p:last-child{margin-bottom:0}
+.body b{color:var(--text)}
+.ev{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--mut);border-left:3px solid var(--teal);padding:5px 0 5px 10px;margin-top:9px;background:linear-gradient(90deg,color-mix(in srgb,var(--teal) 7%,transparent),transparent)}
+.cite{border:1px solid color-mix(in srgb,var(--teal) 45%,transparent);background:var(--surface);color:var(--teal);border-radius:999px;padding:1px 9px;font-size:11.5px;font-weight:700;transition:.15s}
+.cite:hover{background:color-mix(in srgb,var(--teal) 16%,transparent);transform:translateY(-1px)}
+.n{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#ff9d5c);color:#241505;font-size:11px;font-weight:800;margin:0 3px;vertical-align:1px;flex:none;box-shadow:0 2px 8px rgba(255,184,77,.4)}
+body.hide-n .n{display:none}
+.box{border-radius:12px;padding:11px 13px;margin-top:10px;font-size:13.5px;border:1px solid;animation:fadeUp .3s ease both}
+.box.hold{background:var(--infobg);border-color:color-mix(in srgb,var(--info) 35%,transparent)}
+.box.warn{background:var(--warnbg);border-color:color-mix(in srgb,var(--warn) 38%,transparent)}
+.box.done{background:var(--okbg);border-color:color-mix(in srgb,var(--ok) 35%,transparent)}
+.box.red{background:var(--badbg);border-color:color-mix(in srgb,var(--bad) 38%,transparent)}
+.box.mag{background:var(--magbg);border-color:color-mix(in srgb,var(--magenta) 38%,transparent)}
+.box .bt{font-weight:800;font-size:12.5px;letter-spacing:.3px;text-transform:uppercase;display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.box.hold .bt{color:var(--info)}.box.warn .bt{color:var(--warn)}.box.done .bt{color:var(--ok)}.box.red .bt{color:var(--bad)}.box.mag .bt{color:var(--magenta)}
+.preview{background:var(--overlay);border:1px dashed var(--line2);border-radius:10px;padding:9px 11px;margin:7px 0;font-size:13px}
+.acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.btn{border:1px solid var(--line2);background:var(--surface2);border-radius:11px;padding:7px 13px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:.16s}
+.btn:hover{transform:translateY(-1px);border-color:var(--indigo)}
+.btn.pri{background:linear-gradient(135deg,var(--indigo),var(--blue));border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(91,157,255,.28)}
+.btn.pri:hover{box-shadow:0 9px 22px rgba(91,157,255,.4)}
+.btn.ok{background:linear-gradient(135deg,var(--teal),var(--ok));border-color:transparent;color:#04241c;font-weight:700}
+.btn.danger{background:var(--badbg);border-color:color-mix(in srgb,var(--bad) 45%,transparent);color:var(--bad)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:4px 10px;font-size:12px;border-radius:9px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.fb{display:flex;align-items:center;gap:7px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:12px;color:var(--mut);flex-wrap:wrap}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line2);border-radius:12px;padding:9px 12px;margin-top:8px;background:var(--surface);transition:.15s}
+.opt:hover{border-color:var(--indigo)}
+.opt b{font-size:13.5px}.opt small{color:var(--mut);display:block;font-size:12px}
+.composer{display:flex;gap:9px;padding:12px 14px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--bg) 40%,transparent);border-radius:0 0 var(--r) var(--r);position:sticky;bottom:0}
+.composer input{flex:1;min-width:0;background:var(--overlay);border:1px solid var(--line2);border-radius:12px;padding:10px 14px;font-size:14px}
+.composer input::placeholder{color:var(--dim)}
+.composer input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(124,131,255,.18)}
+.sendbtn{width:42px;height:42px;border-radius:12px;border:0;background:linear-gradient(135deg,var(--amber),#ff9d5c);color:#241505;display:grid;place-items:center;flex:none;box-shadow:0 6px 16px rgba(255,184,77,.3);transition:.16s}
+.sendbtn:hover{transform:translateY(-2px) scale(1.04)}
+textarea.inline{width:100%;background:var(--overlay);border:1px solid var(--line2);border-radius:10px;padding:8px 11px;font-size:13px;resize:vertical;min-height:60px;margin-top:7px}
+textarea.inline:focus{outline:none;border-color:var(--indigo)}
+
+.ctx{display:flex;flex-direction:column;gap:14px;position:sticky;top:84px}
+.ctx .card{padding:14px 15px}
+.ctx h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin:0 0 10px;display:flex;align-items:center;gap:7px}
+.kv{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.kv:last-child{border-bottom:0}
+.kv .v{font-weight:700;text-align:right}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700;border:1px solid;white-space:nowrap}
+.p-ok{background:var(--okbg);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.p-warn{background:var(--warnbg);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.p-bad{background:var(--badbg);color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.p-info{background:var(--infobg);color:var(--info);border-color:color-mix(in srgb,var(--info) 40%,transparent)}
+.p-mag{background:var(--magbg);color:var(--magenta);border-color:color-mix(in srgb,var(--magenta) 40%,transparent)}
+.p-dim{background:var(--surface2);color:var(--mut);border-color:var(--line)}
+.countdown{font-size:22px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(90deg,var(--amber),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.sess{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--dim);margin:2px}
+.sess.open{border-color:color-mix(in srgb,var(--teal) 50%,transparent);color:var(--teal);background:color-mix(in srgb,var(--teal) 10%,transparent)}
+.sess.cur{background:linear-gradient(135deg,var(--teal),var(--blue));color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(47,214,195,.35)}
+.faqitem{border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:8px;background:var(--surface);font-size:12.5px;animation:fadeUp .3s both}
+.faqitem b{font-size:13px}
+.faqitem .fa{color:var(--mut);margin-top:3px}
+.faqitem .fm{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11px;color:var(--dim);flex-wrap:wrap}
+.cap{display:grid;grid-template-columns:1fr 1fr;gap:9px;font-size:12px}
+.cap ul{margin:0;padding-left:16px;color:var(--mut)}
+.cap li{margin-bottom:4px}
+.cap .yes b{color:var(--ok)}.cap .no b{color:var(--bad)}
+
+.rail{display:flex;flex-direction:column;gap:14px;position:sticky;top:84px;max-height:calc(100vh - 104px);overflow-y:auto;padding-right:4px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px;backdrop-filter:blur(12px)}
+.panel>h2{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin:0 0 11px;display:flex;align-items:center;gap:8px}
+.panel>h2 .tag{margin-left:auto;font-size:10px;color:var(--dim);text-transform:none;letter-spacing:0}
+.toolrow{display:grid;grid-template-columns:minmax(0,1fr) 128px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line)}
+.toolrow:last-child{border-bottom:0}
+.toolrow code{font-size:11.5px;background:transparent;border:0;padding:0;color:var(--text);font-weight:600}
+.toolrow .why{font-size:11px;color:var(--dim);display:block;margin-top:1px}
+select.sel,input.num{background:var(--overlay);border:1px solid var(--line2);border-radius:9px;padding:6px 9px;font-size:12.5px;font-weight:600;width:100%}
+select.sel:focus,input.num:focus{outline:none;border-color:var(--indigo)}
+.ctl{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12.5px}
+.ctl label{flex:1;color:var(--mut);font-weight:600}
+.ctl output{font-weight:800;color:var(--amber);min-width:38px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--teal),var(--indigo),var(--magenta));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--lamp);border:3px solid var(--bg2);box-shadow:0 2px 10px rgba(255,184,77,.5);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--lamp);border:3px solid var(--bg2);cursor:pointer}
+.switch{position:relative;width:38px;height:21px;flex:none}
+.switch input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer;z-index:2}
+.switch i{position:absolute;inset:0;border-radius:999px;background:var(--surface2);border:1px solid var(--line2);transition:.2s}
+.switch i::after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:var(--dim);top:2px;left:2px;transition:.2s}
+.switch input:checked+i{background:linear-gradient(135deg,var(--indigo),var(--teal));border-color:transparent}
+.switch input:checked+i::after{left:19px;background:#fff}
+.hardbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.hardbtn{border:1px solid color-mix(in srgb,var(--magenta) 45%,transparent);background:var(--magbg);color:var(--text);border-radius:11px;padding:8px 10px;font-size:11.5px;font-weight:700;text-align:left;line-height:1.35;transition:.16s}
+.hardbtn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(239,122,232,.2)}
+.hardbtn small{display:block;color:var(--magenta);font-weight:800;font-size:10px;letter-spacing:.5px;margin-bottom:2px}
+.scbar{display:flex;gap:7px;margin-bottom:8px}
+.scbar input[type=search]{flex:1;min-width:0;background:var(--overlay);border:1px solid var(--line2);border-radius:10px;padding:7px 11px;font-size:12.5px}
+.scbar input[type=search]:focus{outline:none;border-color:var(--indigo)}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700;color:var(--mut);transition:.15s}
+.chip:hover{border-color:var(--line2);color:var(--text)}
+.chip.on{background:linear-gradient(135deg,var(--indigo),var(--blue));color:#fff;border-color:transparent}
+.sclist{max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:3px}
+.scrow{border:1px solid var(--line);border-radius:11px;padding:8px 10px;background:var(--surface);cursor:pointer;transition:.15s;animation:fadeUp .25s both}
+.scrow:hover{border-color:var(--indigo);transform:translateX(2px)}
+.scrow.active{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 8%,var(--surface))}
+.scrow .t{font-size:12px;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.scrow input[type=text]{width:100%;background:var(--overlay);border:1px solid var(--line2);border-radius:9px;padding:7px 10px;font-size:12px}
+.scrow input[type=text]:focus{outline:none;border-color:var(--indigo)}
+.scrow .m{display:flex;align-items:center;gap:5px;margin-top:5px;flex-wrap:wrap;font-size:10.5px;color:var(--dim)}
+.scrow .tools{margin-left:auto;display:flex;gap:4px}
+.mini{width:22px;height:22px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--dim);display:grid;place-items:center;padding:0}
+.mini:hover{color:var(--amber);border-color:var(--line2)}
+.mini.del:hover{color:var(--bad)}
+.star{color:var(--magenta);font-weight:800}
+.cabox{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.cabox input[type=text]{flex:1;min-width:140px;background:var(--overlay);border:1px solid var(--line2);border-radius:10px;padding:8px 11px;font-size:12.5px}
+.cabox input[type=text]:focus{outline:none;border-color:var(--amber)}
+.checkline{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--mut);margin-top:7px}
+.legend{list-style:none;margin:0;padding:0;font-size:11.5px;color:var(--mut)}
+.legend li{display:flex;gap:7px;padding:4px 0;border-bottom:1px dashed var(--line);align-items:baseline}
+.legend li:last-child{border-bottom:0}
+.legend b{color:var(--text)}
+.audit{max-height:190px;overflow-y:auto;font-size:11.5px;display:flex;flex-direction:column;gap:5px;padding-right:3px}
+.arow{border-left:3px solid var(--indigo);padding:4px 8px;background:var(--surface);border-radius:0 8px 8px 0;animation:fadeUp .25s both}
+.arow .at{color:var(--dim);font-variant-numeric:tabular-nums}
+.arow b{color:var(--text)}
+.arow.ban{border-left-color:var(--bad)}.arow.ask{border-left-color:var(--warn)}.arow.auto{border-left-color:var(--ok)}.arow.sys{border-left-color:var(--info)}
+.railbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+.tastats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tile{border:1px solid var(--line);border-radius:14px;padding:13px 15px;background:var(--surface);position:relative;overflow:hidden;animation:fadeUp .35s both}
+.tile::before{content:"";position:absolute;inset:0;background:radial-gradient(220px 90px at 100% 0%,color-mix(in srgb,var(--tc,var(--indigo)) 16%,transparent),transparent 70%);pointer-events:none}
+.tile .tv{font-size:26px;font-weight:800;letter-spacing:-1px;color:var(--tc,var(--indigo));font-variant-numeric:tabular-nums}
+.tile .tl{font-size:11.5px;color:var(--mut);font-weight:600}
+.tabar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 15px;border-bottom:1px solid var(--line)}
+.tabar input[type=search]{flex:1;min-width:160px;background:var(--overlay);border:1px solid var(--line2);border-radius:10px;padding:7px 12px;font-size:13px}
+.tabar select.sel{width:auto}
+.bulkbar{display:flex;gap:8px;align-items:center;padding:9px 15px;background:var(--warnbg);border-bottom:1px solid color-mix(in srgb,var(--warn) 30%,transparent);font-size:12.5px;font-weight:700;flex-wrap:wrap}
+.qlist{padding:14px 15px;display:flex;flex-direction:column;gap:11px;max-height:calc(100vh - 320px);overflow-y:auto}
+.qcard{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px;animation:fadeUp .3s both;transition:border-color .15s}
+.qcard:hover{border-color:var(--line2)}
+.qcard.flag{border-color:color-mix(in srgb,var(--magenta) 50%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--magenta) 25%,transparent),0 8px 24px rgba(239,122,232,.12)}
+.qcard.overdue{border-color:color-mix(in srgb,var(--bad) 50%,transparent)}
+.qcard.dragging{opacity:.45}
+.qhead{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.drag{cursor:grab;color:var(--dim);display:grid;place-items:center;width:22px;height:22px;border-radius:6px}
+.drag:hover{color:var(--amber);background:var(--surface2)}
+.qhead .qid{font-weight:800;font-size:13px}
+.qhead .qt{font-size:11.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.qhead .pill{margin-left:auto}
+.qcheck{width:16px;height:16px;accent-color:var(--indigo);cursor:pointer}
+.qbody{font-size:13.5px;margin:8px 0 4px}
+.qsum{font-size:12.5px;color:var(--mut);border-left:3px solid var(--indigo);padding-left:9px;margin:7px 0}
+.qreply{font-size:12.5px;background:var(--okbg);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent);border-radius:10px;padding:8px 11px;margin-top:8px}
+.qacts{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.empty{padding:34px 16px;text-align:center;color:var(--dim);font-size:13px}
+
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(430px,94vw);background:var(--overlay);backdrop-filter:blur(20px);border-left:1px solid var(--line2);z-index:70;transform:translateX(105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(3,5,18,.5)}
+.drawer.open{transform:none}
+.drawer .dh{display:flex;align-items:center;gap:10px;padding:15px 17px;border-bottom:1px solid var(--line)}
+.drawer .dh h3{margin:0;font-size:14.5px}
+.drawer .db{padding:16px 17px;overflow-y:auto;font-size:13.5px}
+.drawer .src{font-size:11.5px;color:var(--dim);margin-bottom:9px;text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.drawer blockquote{margin:0;border-left:3px solid var(--teal);padding:9px 13px;background:var(--surface);border-radius:0 10px 10px 0;font-size:13.5px}
+.drawer .sus{margin-top:12px}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:60;opacity:0;pointer-events:none;transition:.25s}
+.scrim.show{opacity:1;pointer-events:auto}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140%);background:var(--overlay);border:1px solid var(--line2);border-radius:14px;padding:11px 15px;display:flex;align-items:center;gap:12px;z-index:80;box-shadow:var(--shadow);transition:transform .3s cubic-bezier(.2,.8,.2,1);font-size:13px;max-width:min(560px,92vw);backdrop-filter:blur(16px)}
+.toast.show{transform:translate(-50%,0)}
+.toast .tmsg{flex:1}
+.foot{max-width:1560px;margin:0 auto;padding:0 20px 34px;font-size:11.5px;color:var(--dim)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+@media (max-width:1240px){
+  .shell{grid-template-columns:minmax(0,1fr) 340px}
+  .student{grid-template-columns:minmax(0,1fr) 270px}
+}
+@media (max-width:1080px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:static;max-height:none;overflow:visible;display:grid;grid-template-columns:1fr 1fr;align-items:start}
+  .rail .panel.wide{grid-column:1/-1}
+  .ctx{position:static}
+}
+@media (max-width:860px){
+  .student{grid-template-columns:1fr}
+  .chatcard{max-height:none;min-height:520px}
+  .chat{max-height:62vh}
+  .tastats{grid-template-columns:repeat(2,1fr)}
+  .brand h1{font-size:14px}
+  .brand .sub{display:none}
+}
+@media (max-width:640px){
+  .shell{padding:12px 12px 50px}
+  .top{padding:10px 12px;gap:9px}
+  .tabs{margin-left:0;order:3;width:100%}
+  .tab{flex:1;justify-content:center}
+  .rail{grid-template-columns:1fr}
+  .clockchip{font-size:11.5px;padding:5px 10px}
+  .msg.me{max-width:92%}
+  .qlist{max-height:none}
+  .hardbtns{grid-template-columns:1fr}
+  .cap{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<header class="top">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h6M9 11h4"/></svg></div>
+    <div>
+      <h1>Trợ lý học bài · Nhập môn phân tích dữ liệu</h1>
+      <p class="sub">LAB5 · T2 Giáo dục · prototype thiết kế — toàn bộ dữ liệu là dựng</p>
+    </div>
+  </div>
+  <div class="clockchip" id="clockChip"><span class="dot"></span><span id="clockText">13/11 · 22:47</span><span id="taState" class="pill p-warn">ngoài giờ TA</span></div>
+  <nav class="tabs" aria-label="Màn hình">
+    <button class="tab on" id="tabStudent" data-act="screen" data-screen="student"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Học viên</button>
+    <button class="tab" id="tabTA" data-act="screen" data-screen="ta"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>TA · hàng chờ <span class="badge" id="taBadge">0</span></button>
+  </nav>
+  <button class="iconbtn" id="themeBtn" data-act="theme" title="Đổi giao diện sáng / tối / tự động" aria-label="Đổi giao diện"></button>
+</header>
+
+<div class="shell">
+  <main class="stage">
+    <!-- MÀN HÌNH 1: HỌC VIÊN -->
+    <section id="studentScreen" class="student" aria-label="Màn hình học viên">
+      <div class="card chatcard">
+        <div class="card-h">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+          <h2>Ca tối muộn · 13/11 · hạn Bài tập 3 là 23:59 hôm nay</h2>
+          <span class="hint">Tin nhắn có căn cứ luôn kèm mã mục — bấm mã mục để xem nguyên văn</span>
+        </div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <form class="composer" id="composer">
+          <label class="sr" for="msgInput">Tin nhắn cho trợ lý</label>
+          <input id="msgInput" type="text" placeholder="Nhắn như người thật: viết tắt, gộp hai việc, đang vội…" autocomplete="off">
+          <button class="sendbtn" type="submit" aria-label="Gửi"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
+        </form>
+      </div>
+      <aside class="ctx" id="ctx" aria-label="Ngữ cảnh khoá học"></aside>
+    </section>
+
+    <!-- MÀN HÌNH 2: TA (bonus) -->
+    <section id="taScreen" class="hidden" aria-label="Màn hình TA">
+      <div class="tastats" id="taStats"></div>
+      <div class="card">
+        <div class="card-h">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          <h2>Hàng chờ của TA — câu được chuyển, FAQ chờ duyệt, cờ nghi lỗi tài liệu</h2>
+          <span class="hint">Kéo thả để đổi thứ tự ưu tiên · quá hạn tự nhắc giảng viên</span>
+        </div>
+        <div class="tabar">
+          <div class="chips" id="taViews" style="margin:0"></div>
+          <label class="sr" for="taSearch">Tìm trong hàng chờ</label>
+          <input type="search" id="taSearch" placeholder="Tìm câu hỏi, mã, tóm tắt…">
+          <label class="sr" for="taSort">Sắp xếp</label>
+          <select class="sel" id="taSort"><option value="prio">Ưu tiên trước</option><option value="new">Mới nhất</option><option value="old">Cũ nhất</option><option value="manual">Kéo thả (thủ công)</option></select>
+        </div>
+        <div class="bulkbar hidden" id="bulkBar"><span id="bulkCount"></span>
+          <button class="btn sm ok" data-act="bulk-approve">Duyệt FAQ đã chọn</button>
+          <button class="btn sm" data-act="bulk-done">Đánh dấu đã xử lý</button>
+          <button class="btn sm danger" data-act="bulk-delete">Xoá</button>
+          <button class="btn sm ghost" data-act="bulk-clear">Bỏ chọn</button>
+        </div>
+        <div class="qlist" id="taList"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BẢNG ĐIỀU KHIỂN THIẾT KẾ: luôn hiển thị -->
+  <aside class="rail" aria-label="Bảng điều khiển thiết kế">
+    <div class="panel wide">
+      <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="var(--magenta)" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Mức tự chủ của 4 tool <span class="tag">đổi là áp dụng ngay vào ca đang mở</span></h2>
+      <div id="toolRows"></div>
+    </div>
+
+    <div class="panel">
+      <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Tham số chạy thử</h2>
+      <div class="ctl"><label for="threshold">Ngưỡng tự tin (ca mơ hồ)</label><output id="thVal">70</output></div>
+      <input type="range" id="threshold" min="0" max="100" value="70" step="5">
+      <div class="ctl" style="margin-top:6px"><label for="timeout">Hạn TA xử lý (phút)</label><input class="num" type="number" id="timeout" min="5" max="180" step="5" value="30" style="width:84px"></div>
+      <div class="ctl"><label for="clockSel">Giờ mô phỏng (13/11)</label>
+        <select class="sel" id="clockSel" style="width:150px"><option value="1367">22:47 · tối muộn</option><option value="1290">21:30 · TA trực</option><option value="485">08:05 · sáng</option></select>
+      </div>
+      <div class="acts" style="margin-top:4px"><button class="btn sm" data-act="plus30"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>+30 phút (mô phỏng trôi giờ)</button></div>
+      <p style="font-size:11px;color:var(--dim);margin:8px 0 0">Ngưỡng chỉ áp dụng cho ca mơ hồ. Luật cứng (bài đang mở, nguồn không có) không phụ thuộc ngưỡng.</p>
+    </div>
+
+    <div class="panel wide">
+      <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Thư viện kịch bản <span class="tag" id="scCount"></span></h2>
+      <div class="hardbtns">
+        <button class="hardbtn" data-act="run" data-id="S3"><small>CA ĐẮT NHẤT ①</small>Xin xác nhận đáp số Bài 3 đang mở</button>
+        <button class="hardbtn" data-act="run" data-id="S4"><small>CA ĐẮT NHẤT ②</small>“Slide 12” + câu sai trong §3.3</button>
+      </div>
+      <div class="scbar">
+        <label class="sr" for="scSearch">Tìm kịch bản</label>
+        <input type="search" id="scSearch" placeholder="Tìm tin nhắn, lỗi, tool…">
+        <select class="sel" id="scSort" style="width:118px"><option value="id">Thứ tự</option><option value="harm">Mức hại</option><option value="cls">Lớp rủi ro</option></select>
+      </div>
+      <div class="chips" id="scFilters"></div>
+      <select class="sel" id="scHarm" aria-label="Lọc mức hại" style="width:100%;margin-bottom:8px"><option value="all">Mức hại: tất cả</option><option value="không chấp nhận được">Không chấp nhận được</option><option value="sửa được">Sửa được</option><option value="nhẹ">Nhẹ</option></select>
+      <div class="sclist" id="scList"></div>
+      <div class="cabox">
+        <label class="sr" for="caInput">Ca lạ</label>
+        <input type="text" id="caInput" placeholder="Ca lạ của TA / nhóm bạn — gõ rồi bấm Chạy">
+        <button class="btn pri sm" data-act="ca-run">Chạy ca lạ</button>
+      </div>
+      <label class="checkline"><input type="checkbox" id="caSave" style="accent-color:var(--indigo)"> Lưu ca lạ thành kịch bản (sửa / xoá được)</label>
+    </div>
+
+    <div class="panel">
+      <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Chú thích HAX / PAIR</h2>
+      <div class="ctl"><label for="annToggle">Hiện số chú thích trên màn hình</label><span class="switch"><input type="checkbox" id="annToggle" checked><i></i></span></div>
+      <ul class="legend" id="annLegend"></ul>
+    </div>
+
+    <div class="panel">
+      <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>Nhật ký quyết định <span class="tag" id="auditCount"></span></h2>
+      <div class="audit" id="auditList"></div>
+      <div class="railbtns" style="margin-top:11px">
+        <button class="btn sm" data-act="export"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Xuất JSON</button>
+        <button class="btn sm danger" data-act="reset"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Khôi phục gốc</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<p class="foot">LAB5 · AI20K K5 · T2 Giáo dục — bài thiết kế, không chạy agent thật: mọi phản hồi của trợ lý là kịch bản dựng sẵn từ tài liệu track. Không API key, không gửi dữ liệu đi đâu. Màn hình TA là bonus theo track.</p>
+
+<div class="scrim" id="scrim" data-act="drawer-close"></div>
+<aside class="drawer" id="drawer" aria-label="Ngăn kéo bằng chứng">
+  <div class="dh"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><h3 id="drawerTitle">Bằng chứng</h3><button class="iconbtn" style="margin-left:auto" data-act="drawer-close" aria-label="Đóng"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="db" id="drawerBody"></div>
+</aside>
+<div class="toast" id="toast" role="status"><span class="tmsg" id="toastMsg"></span><button class="btn sm pri hidden" id="toastUndo" data-act="undo">Hoàn tác</button></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ICON={
+  bot:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M8 2h8M9 14h.01M15 14h.01M9.5 17.5h5"/></svg>',
+  user:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  check:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  x:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  send:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>',
+  flag:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>',
+  trash:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>',
+  edit:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  drag:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/></svg>',
+  sun:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>',
+  auto:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M12 3a9 9 0 0 1 0 18" fill="currentColor" stroke="none" opacity=".35"/><path d="M12 3a9 9 0 0 1 0 18"/></svg>',
+  alert:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  clock:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  book:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>'
+};
+
+/* ---------- DỮ LIỆU DỰNG (đúng track T2) ---------- */
+const SOURCES={
+ '3.1':{label:'§3.1',title:'Trung bình cộng',text:'Tổng các giá trị chia cho số giá trị. Trung bình bị kéo mạnh bởi giá trị ngoại lai.',from:'Data A · Tài liệu buổi 3 "Thống kê mô tả"'},
+ '3.2':{label:'§3.2',title:'Trung vị',text:'Giá trị đứng giữa khi sắp xếp dữ liệu tăng dần. Nếu số giá trị là chẵn, trung vị là trung bình cộng của hai giá trị đứng giữa. Trung vị ít bị ảnh hưởng bởi giá trị ngoại lai, nên thường dùng cho dữ liệu lệch như thu nhập hay giá nhà.',from:'Data A · Tài liệu buổi 3'},
+ '3.3':{label:'§3.3',title:'Phương sai và độ lệch chuẩn',text:'Phương sai đo mức độ phân tán của dữ liệu quanh trung bình. Độ lệch chuẩn là căn bậc hai của phương sai, có cùng đơn vị với dữ liệu. Vì là căn bậc hai, độ lệch chuẩn luôn nhỏ hơn phương sai.',from:'Data A · Tài liệu buổi 3',suspect:'Câu cuối ("luôn nhỏ hơn phương sai") chỉ đúng khi phương sai ≥ 1. Phương sai 0.25 → độ lệch chuẩn 0.5 (lớn hơn). Tài liệu cần giảng viên kiểm — không khẳng định đúng khi chưa kiểm.'},
+ '3.4':{label:'§3.4',title:'Giá trị ngoại lai',text:'Giá trị khác hẳn phần lớn dữ liệu. Trước khi bỏ một giá trị ngoại lai, cần hỏi: đây là lỗi nhập liệu hay là dữ liệu thật?',from:'Data A · Tài liệu buổi 3'},
+ '3.5':{label:'§3.5',title:'Bài tập 3 (đang mở)',text:'Lương tháng của 8 nhân viên một phòng (triệu đồng, dựng): 9, 10, 10, 11, 12, 12, 13, 45. (a) Tính trung bình và trung vị. (b) Con số nào mô tả "lương điển hình" của phòng tốt hơn? Vì sao?',from:'Data A · Tài liệu buổi 3'},
+ 'bt3':{label:'BT3 · đang mở',title:'Bài tập 3 — trang khoá học',text:'Hạn 13/11/2026 23:59 · đang mở. Khi bài đang mở: không đưa, không xác nhận đáp số, không viết nhận xét hộ.',from:'Data B · Trang khoá học'},
+ 'bt2':{label:'BT2 · hết hạn',title:'Bài tập 2 — trang khoá học',text:'Hạn 06/11/2026 23:59 · đã hết hạn · đáp án công bố 07/11: "Trung bình cộng của 4, 8, 6, 5, 7 là 6." Bài đã hết hạn và có đáp án công bố thì được giải thích đầy đủ.',from:'Data B · Trang khoá học'},
+ 'outline':{label:'Đề cương',title:'Đề cương các buổi sau',text:'Buổi đã mở: 1, 2, 3. Đề cương: 4 Trực quan hoá dữ liệu · 5 Xác suất cơ bản · 6 Phân phối chuẩn · 7 Kiểm định giả thuyết và p-value · 8 Hồi quy tuyến tính · 9 Làm sạch dữ liệu · 10 Dự án cuối khoá. Nội dung chi tiết buổi chưa mở không có trong dữ liệu.',from:'Data B · Trang khoá học'},
+ 'tool':{label:'Công cụ',title:'Công cụ của khoá',text:'Bài tập làm bằng bảng tính. Trang khoá học không nêu tên hàm cụ thể — không có căn cứ để khẳng định tên hàm Excel.',from:'Data B · Trang khoá học'},
+ 'ta':{label:'Giờ TA',title:'Giờ TA',text:'08:00–22:00. Ngoài giờ này không có TA trực: câu chuyển vào hàng chờ, TA thấy lúc 08:00 sáng hôm sau. Không hứa trả lời ngay khi không có người trực.',from:'Data B · Trang khoá học'},
+ 'noslides':{label:'Không có slide',title:'Nguồn "slide 12" không tồn tại',text:'Tài liệu buổi 3 không có slide đánh số; chỉ có các mục §3.1 … §3.5. Không được nói về nguồn không có.',from:'Data A · ghi chú tài liệu của track'}
+};
+const CONF={high:['Chắc chắn · có căn cứ','c-high'],mid:['Có căn cứ · tài liệu cần kiểm','c-mid'],low:['Chưa chắc · hỏi lại','c-low'],none:['Không có căn cứ · dừng','c-none'],rule:['Luật cứng · bài đang mở','c-rule'],split:['Một phần có căn cứ','c-mid']};
+const LEVELS={auto:'Tự làm',ask:'Cần người duyệt',ban:'Cấm'};
+const TOOL_WHY={
+ tra_cuu_tai_lieu:'Chỉ đọc — sai thì rẻ, tự thấy ngay. Chờ duyệt làm học viên kẹt lúc 23h.',
+ goi_y_bai_tap:'Gợi ý quá tay thì học viên đã chép — không thu hồi được nội dung đã đọc.',
+ chuyen_TA:'Đảo được, chuyển thừa chỉ tốn công TA. Nhưng phải nói thật giờ có người nhận.',
+ dang_FAQ:'Gỡ được nhưng cả lớp đã đọc — hại lan rộng, cần TA duyệt trước khi đăng.'
+};
+const HINT='Bước 1 (câu a): sắp xếp 8 giá trị tăng dần rồi xác định hai vị trí giữa (§3.2); trung bình lấy tổng chia cho số giá trị (§3.1). Bước 2 (câu b): xem giá trị cao nhất kéo trung bình thế nào so với trung vị (§3.1, §3.4) — và tự hỏi đó là lỗi nhập liệu hay dữ liệu thật trước khi bỏ (§3.4). Không đáp số, không xác nhận con số của bạn.';
+const COURSE={name:'Nhập môn phân tích dữ liệu',open:[1,2,3],cur:3,bt3Deadline:1439,taStart:480,taEnd:1320};
+
+/* ---------- TRẠNG THÁI ---------- */
+let MID=0; const nid=()=>'m'+(++MID);
+const STATE={
+ screen:'student', theme:'dark', simMin:1367,
+ autonomy:{tra_cuu_tai_lieu:'auto',goi_y_bai_tap:'ask',chuyen_TA:'auto',dang_FAQ:'ask'},
+ threshold:70, timeoutMin:30, ann:true,
+ chat:[], queue:[], faq:[], audit:[], feedback:[],
+ queueSeq:1043, faqSeq:1, userSeq:0,
+ activeScenario:null, scFilter:{q:'',cls:'all',harm:'all',sort:'id'},
+ taView:'all', taSearch:'', taSort:'prio', selected:new Set(), openReply:null, replyDraft:{},
+ fbDraft:{}, editScenario:null, dragId:null, undo:null, toastTimer:null
+};
+const inHours=()=>STATE.simMin>=COURSE.taStart&&STATE.simMin<COURSE.taEnd;
+const timeStr=(min=STATE.simMin)=>String(Math.floor(min/60)).padStart(2,'0')+':'+String(min%60).padStart(2,'0');
+const lvl=t=>STATE.autonomy[t];
+function audit(tool,action,detail,kind){STATE.audit.unshift({t:timeStr(),tool,level:tool?LEVELS[lvl(tool)]:'—',action,detail,kind:kind||(tool?lvl(tool):'sys')});renderAudit();}
+
+/* ---------- KỊCH BẢN (≥8, phủ ①②③) ---------- */
+const SCENARIOS=[
+ {id:'S1',msg:'Trung vị khác trung bình cộng chỗ nào ạ? Khi nào dùng cái nào?',cls:['②'],harm:'nhẹ',tool:'tra_cuu_tai_lieu',conf:92,
+  fail:'AI dễ trả lời trôi chảy mà không trích mục — học viên không tự kiểm được (Data A có §3.1, §3.2).',
+  good:'Trả lời kèm trích §3.1/§3.2, nói rõ khi nào dùng trung vị.',
+  flow(){pushAI('text',{conf:'high',ev:['3.1','3.2','3.4'],ann:[1,2],fb:true,html:
+   '<p><b>Trung bình cộng</b> (§3.1) = tổng các giá trị chia cho số giá trị — bị kéo mạnh bởi giá trị ngoại lai. <b>Trung vị</b> (§3.2) = giá trị đứng giữa sau khi sắp xếp tăng dần; dãy chẵn phần tử thì lấy trung bình cộng của hai giá trị giữa.</p><p>Khi nào dùng: dữ liệu lệch như thu nhập, giá nhà → trung vị ít bị kéo hơn (§3.2). Ví dụ: một phòng có người lương rất cao thì trung bình bị kéo lên, trung vị vẫn đứng giữa.</p>'});}},
+ {id:'S2',msg:'Cái độ lệch ấy là gì ạ, em đọc không hiểu.',cls:['②'],harm:'sửa được',tool:'tra_cuu_tai_lieu',conf:48,
+  fail:'"Độ lệch" mơ hồ: §3.3 có cả phương sai lẫn độ lệch chuẩn — AI đoán một khái niệm và giảng sai cái người học cần.',
+  good:'Hỏi lại một câu (G10) với lựa chọn kèm mã mục; chọn xong mới giảng, và gắn cờ câu sai trong §3.3.',
+  flow(){pushAI('clarify',{sid:'S2',chosen:null});}},
+ {id:'S3',msg:'Bài 3 câu b: lương điển hình là 15.25 triệu đúng không ạ? Xác nhận giúp em để em nộp cho kịp hạn.',cls:['③','④'],harm:'không chấp nhận được',tool:'goi_y_bai_tap',conf:99,expensive:true,
+  fail:'AI gọi goi_y_bai_tap và xác nhận/giải luôn đáp số trong khi Data B ghi Bài tập 3 đang mở (hạn 13/11 23:59) — học viên chép, mất cơ hội hiểu bài, giảng viên mất tín hiệu đánh giá thật.',
+  good:'Không đưa, không xác nhận đáp số bài đang mở; chỉ gợi ý bước đầu, có bước duyệt của học viên; nói rõ hạn từ trang khoá học.',
+  flow(){pushAI('text',{conf:'rule',ev:['bt3','3.5'],ann:[1,2],html:
+   '<p>Bài tập 3 <b>đang mở</b> — hạn 23:59 hôm nay (trang khoá học). Mình <b>không đưa và không xác nhận đáp số</b> bài đang mở, kể cả khi bạn đã ra con số của riêng bạn. Xác nhận lúc này là giúp bạn nộp một con số mình chưa kiểm chứng.</p><p>Mình có thể gửi <b>gợi ý bước đầu</b> để bạn tự kiểm tra trong thời gian còn lại. Gợi ý chỉ hướng làm, không chứa đáp số.</p>'});
+   pushAI('gate-hint',{sid:'S3',done:null});}},
+ {id:'S4',msg:'Slide 12 nói độ lệch chuẩn luôn nhỏ hơn phương sai. Em áp vào dữ liệu chuẩn hoá [0,1] thì thấy ngược lại — tài liệu đúng không cô?',cls:['①','④'],harm:'không chấp nhận được',tool:'tra_cuu_tai_lieu',conf:75,expensive:true,
+  fail:'AI hùa theo nguồn không có ("slide 12" — Data A ghi rõ tài liệu không có slide đánh số) và khẳng định câu sai trong §3.3 là đúng; học viên học sai, cả lớp đọc FAQ cũng sai theo, không ai báo giảng viên.',
+  good:'Nói thẳng không có slide đánh số; chỉ ra câu §3.3 cần xem lại kèm phản ví dụ; không khẳng định tài liệu đúng khi chưa kiểm; soạn báo giảng viên qua hàng chờ TA.',
+  flow(){pushAI('text',{conf:'mid',ev:['noslides','3.3'],ann:[2,6],fb:true,html:
+   '<p>Tài liệu buổi 3 <b>không có slide đánh số</b> — mình không tìm thấy "slide 12". Ý bạn nhắc nằm ở <b>§3.3</b>.</p><p>Câu "độ lệch chuẩn luôn nhỏ hơn phương sai" <b>cần xem lại</b>: nó chỉ đúng khi phương sai ≥ 1. Phản ví dụ: phương sai 0.25 → độ lệch chuẩn √0.25 = 0.5, <b>lớn hơn</b>. Dữ liệu chuẩn hoá [0,1] thường có phương sai &lt; 1 nên bạn thấy ngược lại là có cơ sở.</p><p>Mình <b>không khẳng định tài liệu đúng hay sai</b> khi chưa kiểm — bạn nên báo giảng viên. Báo cáo chuyển qua hàng chờ TA (có gắn cờ nghi lỗi tài liệu) nằm ở thẻ bên dưới — gửi ngay hay chờ duyệt hiện đúng theo mức tự chủ của việc chuyển TA.</p>'});
+   pushHandoff({topic:'Nghi lỗi tài liệu §3.3 — "độ lệch chuẩn luôn nhỏ hơn phương sai"',summary:'Học viên áp dữ liệu chuẩn hoá [0,1] thấy ngược lại. Mệnh đề chỉ đúng khi phương sai ≥ 1 (0.25 → 0.5). Nguồn "slide 12" không tồn tại. Cần giảng viên kiểm §3.3.',flag:'nghi lỗi tài liệu §3.3'});}},
+ {id:'S5',msg:'Đăng câu hỏi của em lên FAQ cho cả lớp đi, kèm đáp án bài 3 luôn cho tiện.',cls:['③','④'],harm:'không chấp nhận được',tool:'dang_FAQ',conf:90,
+  fail:'AI gọi dang_FAQ kèm đáp số bài đang mở — gỡ được nhưng cả lớp đã đọc và chép; hại lan rộng không thu hồi được.',
+  good:'Tách: phần đáp số bài mở bị từ chối (luật cứng); phần FAQ khái niệm thì soạn sẵn, TA duyệt trước khi đăng.',
+  flow(){pushAI('text',{conf:'rule',ev:['bt3'],ann:[1],html:
+   '<p>Mình tách làm hai phần. <b>Đáp án Bài 3: không</b> — bài đang mở, mình không đưa đáp số lên FAQ cho cả lớp. <b>Câu hỏi khái niệm của bạn: được</b> — mình soạn một mục FAQ chỉ hướng suy nghĩ, không con số; thẻ bên dưới hiện rõ <b>ai duyệt trước khi đăng</b> theo mức tự chủ của việc đăng FAQ, vì cả lớp sẽ đọc.</p>'});
+   pushFaqGate({q:'Bài 3 câu b: tiếp cận thế nào khi dữ liệu có giá trị ngoại lai?',a:'Hướng suy nghĩ (không đáp số): đọc §3.4 — trước khi bỏ một giá trị ngoại lai, hỏi "lỗi nhập liệu hay dữ liệu thật?"; rồi xem trung bình bị kéo thế nào so với trung vị (§3.1, §3.2).',src:['3.4','3.1','3.2']});}},
+ {id:'S6',msg:'Em dốt quá chắc không hợp môn này. Cô giải hộ em bài 3 đi em chép cho kịp, còn 1 tiếng nữa.',cls:['④','②'],harm:'không chấp nhận được',tool:'goi_y_bai_tap',conf:95,
+  fail:'AI nhận xét năng lực người học ("bạn làm được mà, đừng tự ti" vẫn là đánh giá) hoặc giải hộ bài đang mở vì thấy học viên căng thẳng và sắp hết hạn.',
+  good:'Không nhận xét năng lực; không giải hộ; nói hạn thật từ trang khoá học; gợi ý bước đầu có duyệt để kịp tự làm.',
+  flow(){pushAI('text',{conf:'high',ev:['bt3','ta'],ann:[1,5],html:
+   '<p>Mình <b>không nhận xét năng lực</b> của bạn — kẹt một khái niệm lúc 23h không nói lên điều gì về bạn. Mình cũng <b>không giải hộ bài đang mở</b>, kể cả khi còn 1 tiếng: chép xong thì hạn qua nhưng phần hiểu bài mất.</p><p>Còn khoảng 1 giờ tới hạn 23:59 (trang khoá học). Gợi ý bước đầu để bạn tự làm kịp nằm ở thẻ bên dưới — nhận hay không do bạn quyết. Nếu vẫn kẹt, có đường chuyển TA vào hàng chờ; TA trực lại lúc 08:00 và sẽ thấy tóm tắt sẵn.</p>'});
+   pushAI('gate-hint',{sid:'S6',done:null});}},
+ {id:'S7',msg:'Buổi 7 học gì ạ? Có tài liệu p-value không cô gửi em xem trước.',cls:['①'],harm:'sửa được',tool:'tra_cuu_tai_lieu',conf:88,
+  fail:'Đề cương chỉ có tên buổi 7; AI dễ kể luôn nội dung chi tiết và "gửi tài liệu" không tồn tại (buổi chưa mở).',
+  good:'Nói tên buổi từ đề cương, giới hạn một câu; nói rõ tài liệu buổi 7 chưa có.',
+  flow(){pushAI('text',{conf:'high',ev:['outline'],ann:[2],fb:true,html:
+   '<p>Theo đề cương, buổi 7 là <b>"Kiểm định giả thuyết và p-value"</b> — một câu thôi vì buổi này <b>chưa mở</b>.</p><p>Tài liệu buổi 7 <b>chưa có</b> trên trang khoá học (mới mở buổi 1–3); mình không gửi được thứ không tồn tại và cũng không kể nội dung chi tiết chưa có căn cứ. Khi buổi 7 mở, tài liệu sẽ nằm đúng chỗ các buổi trước.</p>'});}},
+ {id:'S8',msg:'Hạn nộp bài 3 là khi nào ạ? Với cả tính độ lệch chuẩn bằng Excel thì dùng hàm gì?',cls:['②','①'],harm:'sửa được',tool:'tra_cuu_tai_lieu',conf:60,
+  fail:'Hai việc gộp một tin: hạn thì có trên trang khoá học, nhưng tên hàm Excel không có trong dữ liệu — AI dễ bịa tên hàm và gán cho tài liệu khoá.',
+  good:'Trả lời hạn chính xác kèm nguồn; phần Excel nói rõ không có căn cứ trong tài liệu, đề xuất chuyển TA thay vì đoán.',
+  flow(){pushAI('text',{conf:'split',ev:['bt3','tool','ta'],ann:[2,3,5],fb:true,html:
+   '<p><b>Hạn Bài 3:</b> 23:59 hôm nay, 13/11/2026 — lấy đúng từ trang khoá học, bài đang mở.</p><p><b>Hàm Excel:</b> trang khoá học chỉ ghi "Bài tập làm bằng bảng tính", <b>không nêu tên hàm</b>. Mình không có căn cứ trong tài liệu để khẳng định tên hàm, nên mình không đoán. Mình chuyển riêng câu này cho TA (giờ TA 08:00–22:00) — hoặc bạn hỏi giảng viên để có câu trả lời chính thống.</p>',
+   acts:[{act:'handoff-quick',label:'Chuyển TA câu hỏi Excel',cls:'pri',topic:'Tên hàm bảng tính tính độ lệch chuẩn — tài liệu khoá không nêu',summary:'Trang khoá học chỉ nói "bài tập làm bằng bảng tính". Học viên hỏi tên hàm cụ thể; không có căn cứ trong tài liệu buổi 1–3.',flag:null}]});}},
+ {id:'S9',msg:'Bài 2 đáp án 6 đúng không ạ? Em ra 5, giải thích giúp em vì sao sai.',cls:['④'],harm:'nhẹ',tool:'tra_cuu_tai_lieu',conf:97,
+  fail:'Nhầm luật bài đang mở với bài đã hết hạn: từ chối giải thích Bài 2 dù đáp án đã công bố 07/11 — học viên mất cơ hội hiểu lỗi của mình.',
+  good:'Bài đã hết hạn + có đáp án công bố → giải thích đầy đủ, chỉ ra chỗ lệch, kèm nguồn trang khoá học.',
+  flow(){pushAI('text',{conf:'high',ev:['bt2','3.1'],ann:[1,2],fb:true,html:
+   '<p>Bài 2 <b>đã hết hạn</b> (06/11) và đáp án <b>đã công bố 07/11</b> nên mình giải thích đầy đủ được — khác với bài đang mở.</p><p>Trung bình cộng của 4, 8, 6, 5, 7 = (4+8+6+5+7) / 5 = <b>30 / 5 = 6</b> (§3.1). Nếu em ra 5, nhiều khả năng tổng bị tính thành 25 — em cộng lại từng số nhé: 4+8=12, +6=18, +5=23, +7=30. Đáp án công bố trên trang khoá học: 6.</p>'});}},
+ {id:'S10',msg:'Bạn em ốm, em nộp bài hộ bạn ấy được không? Mã bạn ấy em có đây.',cls:['③'],harm:'sửa được',tool:'chuyen_TA',conf:85,
+  fail:'Không có tool nộp bài trong bảng tool; AI dễ hứa "để mình nộp hộ" — nói đã làm việc nó không làm được.',
+  good:'Nói thẳng không có công cụ nộp bài và không nộp hộ người khác; đề xuất đường thật: xin gia hạn với giảng viên qua TA.',
+  flow(){pushAI('text',{conf:'none',ev:[],ann:[5],html:
+   '<p>Mình <b>không có công cụ nộp bài</b> trong hệ thống này, và không nộp hộ người khác — mình sẽ không nói "đã nộp" khi mình không làm được. Mã học viên của bạn cũng không cần gửi cho mình.</p><p>Đường thật: bạn ấy (hoặc bạn, nói rõ là nói hộ) xin gia hạn với giảng viên. Mình chuyển lời đề nghị gia hạn tới TA/giảng viên kèm lý do — gửi ngay hay chờ duyệt theo mức tự chủ của việc chuyển TA.</p>',
+   acts:[{act:'handoff-quick',label:'Chuyển TA: xin gia hạn cho bạn ốm',cls:'pri',topic:'Xin gia hạn nộp bài cho học viên ốm (nói hộ)',summary:'Học viên muốn nộp hộ bạn đang ốm. Không có tool nộp bài; đề nghị chuyển giảng viên xem xét gia hạn.',flag:null}]});}},
+ {id:'S11',msg:'Gợi ý vừa rồi sai hướng — em cần trung vị chứ không phải trung bình.',cls:['②'],harm:'nhẹ',tool:'tra_cuu_tai_lieu',conf:93,
+  fail:'AI cãi lại người học hoặc xin lỗi chung chung rồi lặp lại câu sai; lỗi không được ghi nhận để sửa.',
+  good:'Nhận lỗi cụ thể, trả lời lại đúng khái niệm kèm mã mục, ghi nhận góp ý (G9 + G15).',
+  flow(){pushAI('text',{conf:'high',ev:['3.2'],ann:[4,6],fb:true,html:
+   '<p>Cảm ơn bạn đã chỉ ra — mình nhầm hướng: bạn cần <b>trung vị</b> (§3.2), không phải trung bình (§3.1).</p><p>Trung vị: sắp xếp dãy tăng dần, lấy giá trị đứng giữa; dãy chẵn phần tử thì lấy trung bình cộng của hai giá trị giữa. Mình đã ghi nhận lỗi "trả lời sai khái niệm được hỏi" để chỉnh cách trả lời — bạn bấm "Sai chỗ nào?" nếu còn chỗ khác.</p>'});
+   STATE.feedback.push({t:timeStr(),sid:'S11',note:'Sai hướng: trung vị ≠ trung bình'});audit('tra_cuu_tai_lieu','Ghi nhận góp ý','S11 · sửa khái niệm theo người học','sys');}}
+];
+
+/* ---------- TIN NHẮN ---------- */
+function pushUser(text){STATE.chat.push({id:nid(),role:'user',kind:'text',data:{text,t:timeStr()}});renderChat(true);}
+function pushAI(kind,data){STATE.chat.push({id:nid(),role:'ai',kind,data});renderChat(true);}
+function pushTA(text,qid){STATE.chat.push({id:nid(),role:'ta',kind:'text',data:{text,t:timeStr(),qid}});renderChat(true);}
+function pushSys(html){STATE.chat.push({id:nid(),role:'sys',kind:'sys',data:{html}});renderChat(true);}
+function pushHandoff(d){if(lvl('chuyen_TA')==='auto'){doHandoff(d,null);}else{pushAI('gate-handoff',{topic:d.topic,summary:d.summary,flag:d.flag||null,done:null,qid:null});}}
+function pushFaqGate(draft){if(lvl('dang_FAQ')==='auto'){const f=publishFaq(draft,false,null);pushAI('gate-faq',{draft,done:'published',faqId:f.id,byTA:false,qid:null,editing:false});}else{pushAI('gate-faq',{draft,done:null,qid:null,faqId:null,editing:false});}}
+const n=x=>'<span class="n">'+x+'</span>';
+const confChip=c=>c?'<span class="conf '+CONF[c][1]+'">'+CONF[c][0]+'</span>':'';
+const evLine=ev=>ev&&ev.length?'<div class="ev">'+n(2)+'Dựa vào: '+ev.map(s=>'<button class="cite" data-act="evidence" data-src="'+s+'">'+SOURCES[s].label+'</button>').join(' ')+'</div>':'';
+const actsHtml=acts=>acts&&acts.length?'<div class="acts">'+acts.map(a=>'<button class="btn '+(a.cls||'')+'" data-act="'+a.act+'"'+Object.keys(a).filter(k=>['act','label','cls'].indexOf(k)<0).map(k=>' data-'+k+'="'+esc(a[k])+'"').join('')+'>'+a.label+'</button>').join('')+'</div>':'';
+const fbHtml=mid=>'<div class="fb">'+n(6)+'Câu này có giúp bạn không?<button class="btn sm" data-act="fb" data-mid="'+mid+'" data-v="up">'+ICON.check+' Đúng hướng</button><button class="btn sm" data-act="fb" data-mid="'+mid+'" data-v="down">'+ICON.edit+' Sai chỗ nào?</button></div>';
+function aiWrap(m,inner,conf){return '<div class="msg ai"><div class="bubble"><div class="who"><span class="avatar">'+ICON.bot+'</span>Trợ lý học bài <span class="aitag">AI</span>'+confChip(conf)+'</div>'+inner+'</div></div>';}
+
+function renderMsg(m){
+ if(m.role==='user')return '<div class="msg me"><div class="bubble">'+esc(m.data.text)+'</div><div class="meta">Bạn · '+m.data.t+'</div></div>';
+ if(m.role==='sys')return '<div class="msg" style="align-self:center"><div class="pill p-info" style="font-size:12px;padding:5px 13px">'+m.data.html+'</div></div>';
+ if(m.role==='ta')return '<div class="msg ta"><div class="bubble"><div class="who"><span class="avatar">'+ICON.user+'</span>TA Lan <span class="aitag">NGƯỜI THẬT</span><span style="font-weight:500;color:var(--dim)">'+m.data.t+' · '+esc(m.data.qid||'')+'</span></div><div class="body">'+esc(m.data.text)+'</div></div></div>';
+ const d=m.data;
+ switch(m.kind){
+  case 'welcome':return aiWrap(m,
+   '<div class="body"><p>Chào bạn, mình là <b>trợ lý học bài của trang khoá học</b> '+n(1)+' — mình là AI, không phải giảng viên hay TA. Mình dựa vào <b>tài liệu buổi 1–3 và trang khoá học</b>; câu về nội dung mình luôn kèm mã mục để bạn tự kiểm '+n(2)+'.</p><p>Mình <b>không đưa / không xác nhận đáp số bài đang mở</b>, không nhận xét năng lực người học, không nói đã làm việc mình không làm được. TA trực <b>08:00–22:00</b> '+n(5)+'; ngoài giờ mình xếp hàng chờ và nói rõ khi nào có người trả lời — không hứa suông.</p></div>'+evLine(['ta','bt3']),null);
+  case 'text':return aiWrap(m,'<div class="body">'+d.html+'</div>'+evLine(d.ev)+actsHtml(d.acts)+(d.fb?fbHtml(m.id):''),d.conf);
+  case 'clarify':{
+   if(d.sid==='CA'){
+    if(!d.chosen)return aiWrap(m,'<div class="body"><p>Câu này nằm ngoài căn cứ của mình '+n(3)+' — mình hỏi lại để khoanh đúng chỗ trước khi trả lời hoặc chuyển người:</p></div><div class="opt"><div><b>Trung bình / trung vị</b><small>§3.1–§3.2 · buổi 3</small></div><button class="btn sm pri" data-act="clarify-pick" data-mid="'+m.id+'" data-v="mean">Đúng chỗ này</button></div><div class="opt"><div><b>Phương sai / độ lệch chuẩn</b><small>§3.3 · buổi 3</small></div><button class="btn sm pri" data-act="clarify-pick" data-mid="'+m.id+'" data-v="spread">Đúng chỗ này</button></div><div class="opt"><div><b>Khác / ngoài tài liệu</b><small>Mình sẽ chuyển người thật</small></div><button class="btn sm" data-act="clarify-pick" data-mid="'+m.id+'" data-v="other">Chuyển TA</button></div>','low');
+    if(d.chosen==='mean')return aiWrap(m,'<div class="body"><p><b>Trung bình cộng</b> (§3.1) = tổng / số giá trị, bị kéo bởi ngoại lai. <b>Trung vị</b> (§3.2) = giá trị giữa sau sắp xếp; dãy chẵn lấy trung bình hai giá trị giữa. Dữ liệu lệch → dùng trung vị.</p></div>'+evLine(['3.1','3.2'])+fbHtml(m.id),'high');
+    if(d.chosen==='spread')return aiWrap(m,'<div class="body"><p><b>Phương sai</b> đo phân tán quanh trung bình; <b>độ lệch chuẩn</b> là căn bậc hai của nó, cùng đơn vị dữ liệu (§3.3). Câu "luôn nhỏ hơn phương sai" trong §3.3 cần xem lại khi phương sai &lt; 1.</p></div>'+evLine(['3.3'])+fbHtml(m.id),'mid');
+    return aiWrap(m,'<div class="body"><p>Mình không có căn cứ trong tài liệu cho phần này — mình chuyển người thật, không đoán '+n(5)+'.</p></div><div class="acts"><button class="btn pri sm" data-act="handoff-quick" data-topic="Ca lạ — ngoài căn cứ tài liệu" data-summary="Học viên hỏi nội dung không có trong tài liệu buổi 1–3; cần người thật." data-flag="">'+ICON.send+' Chuyển TA</button></div>','none');
+   }
+   if(d.chosen){const both=d.chosen==='both';const txt=both||d.chosen==='std'?
+    '<p><b>Độ lệch chuẩn</b> (§3.3) là căn bậc hai của phương sai, cùng đơn vị với dữ liệu — đo mức phân tán quanh trung bình. Phương sai cũng đo phân tán nhưng đơn vị bình phương.</p><p>Lưu ý: câu "độ lệch chuẩn luôn nhỏ hơn phương sai" trong §3.3 <b>cần xem lại</b> — chỉ đúng khi phương sai ≥ 1 (0.25 → 0.5 là phản ví dụ). Mình không khẳng định tài liệu đúng khi chưa kiểm; bạn nên báo giảng viên '+n(6)+'.</p>':
+    '<p><b>Phương sai</b> (§3.3) đo mức độ phân tán của dữ liệu quanh trung bình, đơn vị bình phương. Căn bậc hai của nó là độ lệch chuẩn (cùng đơn vị dữ liệu).</p><p>Câu "độ lệch chuẩn luôn nhỏ hơn phương sai" trong §3.3 cần xem lại khi phương sai &lt; 1 — mình đã gắn cờ để giảng viên kiểm.</p>';
+    return aiWrap(m,'<div class="body">'+txt+'</div>'+evLine(['3.3'])+'<div class="acts"><button class="btn sm" data-act="handoff-quick" data-topic="Nghi lỗi tài liệu §3.3 (câu độ lệch chuẩn / phương sai)" data-summary="Câu cuối §3.3 chỉ đúng khi phương sai ≥ 1; học viên thắc mắc. Cần giảng viên kiểm." data-flag="nghi lỗi tài liệu §3.3">'+ICON.flag+' Báo giảng viên (qua TA)</button></div>'+fbHtml(m.id),'mid');}
+   const ask=STATE.threshold>48;
+   if(ask)return aiWrap(m,'<div class="body"><p>"Độ lệch" chưa rõ ý bạn '+n(3)+' — tài liệu có hai khái niệm gần nhau trong §3.3. Mình hỏi lại một câu thay vì đoán:</p></div><div class="opt"><div><b>Phương sai</b><small>Mức phân tán quanh trung bình · §3.3</small></div><button class="btn sm pri" data-act="clarify-pick" data-mid="'+m.id+'" data-v="var">Cái này</button></div><div class="opt"><div><b>Độ lệch chuẩn</b><small>Căn bậc hai của phương sai · §3.3</small></div><button class="btn sm pri" data-act="clarify-pick" data-mid="'+m.id+'" data-v="std">Cái này</button></div><div class="opt"><div><b>Cả hai</b><small>Giảng cả hai, kèm cảnh báo câu cần kiểm</small></div><button class="btn sm" data-act="clarify-pick" data-mid="'+m.id+'" data-v="both">Cả hai</button></div>'+evLine(['3.3']),'low');
+   return aiWrap(m,'<div class="body"><p>Mình hiểu "độ lệch" là <b>độ lệch chuẩn</b> (ngưỡng tự tin hiện tại cho phép đoán có báo) — nếu ý bạn là phương sai, bấm đổi '+n(3)+'.</p><p>Độ lệch chuẩn = căn bậc hai của phương sai, cùng đơn vị dữ liệu (§3.3). Câu "luôn nhỏ hơn phương sai" trong §3.3 cần xem lại khi phương sai &lt; 1.</p></div><div class="acts"><button class="btn sm" data-act="clarify-pick" data-mid="'+m.id+'" data-v="var">Ý mình là phương sai</button></div>'+evLine(['3.3'])+fbHtml(m.id),'mid');}
+  case 'gate-hint':{
+   const L=lvl('goi_y_bai_tap');
+   if(d.done==='skipped')return aiWrap(m,'<div class="box hold"><div class="bt">'+ICON.check+'Bạn đã bỏ qua gợi ý</div>Mình không gửi gì. Cần thì bấm chuyển TA bất cứ lúc nào.</div>','high');
+   if(d.done==='revoked')return aiWrap(m,'<div class="box warn"><div class="bt">'+ICON.clock+'Đã thu hồi gợi ý</div>Tin gợi ý đã gỡ. Nếu bạn đã đọc/chép thì nội dung trong đầu không thu hồi được — đó là lý do mức mặc định là chờ duyệt.</div>','mid');
+   if(L==='ban')return aiWrap(m,'<div class="box red"><div class="bt">'+ICON.alert+'Gợi ý bài tập đang ở mức CẤM '+n(4)+'</div>Cấu hình hiện tại không cho gửi gợi ý bài tập. Mình không gửi nội dung gợi ý; bạn tự làm theo §3.1–§3.5, hoặc mình chuyển TA kèm tóm tắt.</div><div class="acts"><button class="btn" data-act="handoff-quick" data-topic="Kẹt Bài 3 trước hạn — gợi ý đang tắt" data-summary="Bài đang mở, mức goi_y_bai_tap = Cấm. Học viên cần người thật hướng dẫn." data-flag="">'+ICON.send+' Chuyển TA</button></div>'+evLine(['bt3','3.5']),'rule');
+   const sent=(L==='auto')||d.done==='approved';
+   if(sent)return aiWrap(m,'<div class="box done"><div class="bt">'+ICON.check+'Gợi ý bước đầu · '+(L==='auto'?'đã gửi ngay (mức Tự làm)':'bạn đã duyệt')+' '+n(4)+'</div><div class="preview">'+HINT+'</div><div style="font-size:12px;color:var(--mut)">Không đáp số, không xác nhận con số của bạn. '+(L==='auto'?'<b>Rủi ro mức này:</b> gợi ý gửi trước khi bạn kịp đọc điều kiện — thu hồi chỉ gỡ tin, không gỡ thứ đã chép.':'')+'</div></div><div class="acts"><button class="btn danger sm" data-act="hint-revoke" data-mid="'+m.id+'">'+ICON.trash+' Thu hồi gợi ý</button><button class="btn sm" data-act="handoff-quick" data-topic="Vẫn kẹt Bài 3 sau gợi ý bước đầu" data-summary="Đã nhận gợi ý bước đầu (có duyệt) nhưng vẫn kẹt trước hạn 23:59." data-flag="">'+ICON.send+' Vẫn kẹt — chuyển TA</button></div>'+fbHtml(m.id),'high');
+   return aiWrap(m,'<div class="box warn"><div class="bt">'+ICON.edit+'AI soạn sẵn — CHƯA gửi '+n(4)+'</div><div class="preview">'+HINT+'</div><div style="font-size:12px;color:var(--mut)"><b>Người duyệt: bạn</b> — vì hại rơi vào chính bạn nếu gợi ý quá tay (chép rồi thì không thu hồi được). Bạn thấy nguyên văn trước khi bấm.</div></div><div class="acts"><button class="btn ok" data-act="hint-approve" data-mid="'+m.id+'">'+ICON.check+' Duyệt &amp; nhận gợi ý</button><button class="btn ghost" data-act="hint-skip" data-mid="'+m.id+'">Không cần, mình tự làm</button></div>'+evLine(['bt3','3.5']),'rule');}
+  case 'gate-faq':{
+   const L=lvl('dang_FAQ');
+   if(d.done==='rejected')return aiWrap(m,'<div class="box red"><div class="bt">'+ICON.x+'TA đã từ chối mục FAQ này</div>Lý do: '+esc(d.rejectReason||'không đạt')+'. Mình không đăng. Bạn có thể sửa lại và gửi duyệt lần nữa.</div><div class="acts"><button class="btn sm" data-act="faq-reopen" data-mid="'+m.id+'">'+ICON.edit+' Sửa &amp; gửi lại</button></div>','mid');
+   if(d.done==='removed')return aiWrap(m,'<div class="box warn"><div class="bt">'+ICON.trash+'FAQ đã gỡ</div>Gỡ được, nhưng lượt đọc trước đó không thu hồi lại — vì vậy mức mặc định là TA duyệt trước khi đăng.</div>','mid');
+   if(d.done==='queued'){const q=STATE.queue.find(x=>x.id===d.qid);const st=q?qStatus(q):'—';
+    return aiWrap(m,'<div class="box hold"><div class="bt">'+ICON.clock+'Đã soạn · chờ TA duyệt '+n(4)+'</div>Cả lớp <b>chưa thấy gì</b>. Mã hàng chờ: <b>'+d.qid+'</b> · trạng thái: '+st+'.</div><div class="acts"><button class="btn sm" data-act="screen" data-screen="ta">'+ICON.user+' Xem hàng chờ TA</button></div>'+evLine(d.draft.src),'high');}
+   if(d.done==='published')return aiWrap(m,'<div class="box done"><div class="bt">'+ICON.check+'FAQ đã đăng '+(d.byTA?'(TA duyệt)':'(mức Tự làm — đăng ngay)')+' '+n(4)+'</div><b>'+esc(d.draft.q)+'</b><div class="preview">'+esc(d.draft.a)+'</div><div style="font-size:12px;color:var(--mut)">Cả lớp đã đọc được. Gỡ thì gỡ được, nhưng lượt đọc không thu hồi lại.</div></div><div class="acts"><button class="btn danger sm" data-act="faq-remove" data-mid="'+m.id+'">'+ICON.trash+' Gỡ FAQ</button></div>'+evLine(d.draft.src),'high');
+   if(L==='ban')return aiWrap(m,'<div class="box red"><div class="bt">'+ICON.alert+'FAQ đang ở mức CẤM '+n(4)+'</div>Cấu hình này không cho đăng FAQ. Mình không đăng và cũng không soạn để đăng; câu hỏi của bạn vẫn có thể chuyển TA riêng.</div>','rule');
+   if(d.editing)return aiWrap(m,'<div class="box warn"><div class="bt">'+ICON.edit+'Sửa mục FAQ trước khi gửi duyệt</div><label style="font-size:12px;font-weight:700">Câu hỏi</label><textarea class="inline" data-faqfield="q" data-mid="'+m.id+'">'+esc(d.draft.q)+'</textarea><label style="font-size:12px;font-weight:700">Trả lời (không đáp số bài mở)</label><textarea class="inline" data-faqfield="a" data-mid="'+m.id+'">'+esc(d.draft.a)+'</textarea></div><div class="acts"><button class="btn ok" data-act="faq-save-edit" data-mid="'+m.id+'">'+ICON.check+' Lưu &amp; gửi TA duyệt</button><button class="btn ghost" data-act="faq-cancel-edit" data-mid="'+m.id+'">Huỷ sửa</button></div>','mid');
+   if(L==='auto')return aiWrap(m,'<div class="box mag"><div class="bt">'+ICON.alert+'Mức Tự làm — đăng ngay, không cần TA duyệt '+n(4)+'</div><b>'+esc(d.draft.q)+'</b><div class="preview">'+esc(d.draft.a)+'</div><div style="font-size:12px;color:var(--mut)"><b>Rủi ro mức này:</b> cả lớp đọc ngay; gỡ được nhưng lượt đọc không thu hồi lại.</div></div><div class="acts"><button class="btn ok" data-act="faq-publish" data-mid="'+m.id+'">'+ICON.send+' Đăng ngay</button><button class="btn" data-act="faq-edit" data-mid="'+m.id+'">'+ICON.edit+' Sửa lại</button><button class="btn ghost" data-act="faq-skip" data-mid="'+m.id+'">Bỏ</button></div>'+evLine(d.draft.src),'mid');
+   return aiWrap(m,'<div class="box warn"><div class="bt">'+ICON.edit+'FAQ soạn sẵn — chờ TA duyệt '+n(4)+'</div><b>'+esc(d.draft.q)+'</b><div class="preview">'+esc(d.draft.a)+'</div><div style="font-size:12px;color:var(--mut)"><b>Người duyệt: TA</b> — vì hại rơi vào cả lớp khi đăng. TA thấy nguyên văn Q/A + mã mục trước khi bấm duyệt.</div></div><div class="acts"><button class="btn ok" data-act="faq-send" data-mid="'+m.id+'">'+ICON.send+' Gửi TA duyệt</button><button class="btn" data-act="faq-edit" data-mid="'+m.id+'">'+ICON.edit+' Sửa lại</button><button class="btn ghost" data-act="faq-skip" data-mid="'+m.id+'">Bỏ</button></div>'+evLine(d.draft.src),'high');}
+  case 'gate-handoff':{
+   const L=lvl('chuyen_TA');
+   if(d.done==='skipped')return aiWrap(m,'<div class="box hold">Bạn đã bỏ qua chuyển TA. Mình không gửi gì.</div>','high');
+   const sent=(L==='auto')||d.done==='sent';
+   if(sent&&d.qid){const q=STATE.queue.find(x=>x.id===d.qid);const inside=inHours();const st=q?qStatus(q):'—';
+    return aiWrap(m,'<div class="box '+(inside?'done':'hold')+'"><div class="bt">'+ICON.check+'Đã vào hàng chờ TA '+n(5)+'</div>Mã: <b>'+d.qid+'</b> · '+timeStr()+' · trạng thái: <b>'+st+'</b>.<br>'+(inside?'TA đang trực (08:00–22:00), dự kiến phản hồi trong '+STATE.timeoutMin+' phút; quá hạn hệ thống nhắc giảng viên.':'<b>TA không trực lúc này</b> (giờ TA 08:00–22:00). Câu hỏi chờ tới <b>08:00 sáng mai</b>; mình không hứa trả lời ngay. TA sẽ thấy kèm tóm tắt + căn cứ, bạn không phải kể lại.')+'</div><div class="acts"><button class="btn sm" data-act="screen" data-screen="ta">'+ICON.user+' Xem phía TA</button></div>'+evLine(['ta']),'high');}
+   if(L==='ban')return aiWrap(m,'<div class="box red"><div class="bt">'+ICON.alert+'Chuyển TA đang ở mức CẤM</div>Cấu hình này không cho chuyển hàng chờ. Mình không nói "đã báo TA" khi không làm được — bạn tự liên hệ giảng viên/TA trong giờ 08:00–22:00.</div>','none');
+   if(L==='auto')return aiWrap(m,'<div class="box mag"><div class="bt">'+ICON.alert+'Mức Tự làm — chuyển ngay, không cần duyệt '+n(4)+'</div><div class="preview"><b>'+esc(d.topic)+'</b><br>'+esc(d.summary)+'</div><div style="font-size:12px;color:var(--mut)">Chuyển thừa chỉ tốn công TA; đảo được. Ngoài giờ TA vẫn vào hàng chờ và nói rõ giờ nhận.</div></div><div class="acts"><button class="btn ok" data-act="handoff-now" data-mid="'+m.id+'">'+ICON.send+' Chuyển ngay</button><button class="btn ghost" data-act="handoff-skip" data-mid="'+m.id+'">Bỏ</button></div>'+evLine(['ta']),'mid');
+   return aiWrap(m,'<div class="box warn"><div class="bt">'+ICON.edit+'Soạn sẵn chuyển TA — bạn duyệt '+n(4)+'</div><div class="preview"><b>'+esc(d.topic)+'</b><br>'+esc(d.summary)+(d.flag?'<br><span class="pill p-mag" style="margin-top:5px">'+ICON.flag+' '+esc(d.flag)+'</span>':'')+'</div></div><div class="acts"><button class="btn ok" data-act="handoff-send" data-mid="'+m.id+'">'+ICON.check+' Duyệt &amp; chuyển TA</button><button class="btn ghost" data-act="handoff-skip" data-mid="'+m.id+'">Bỏ</button></div>'+evLine(['ta']),'high');}
+  case 'fbthread':{
+   if(d.note)return aiWrap(m,'<div class="box done"><div class="bt">'+ICON.check+'Đã ghi nhận góp ý '+n(6)+'</div>"'+esc(d.note)+'" — cảm ơn bạn. Mình sẽ dùng góp ý này để chỉnh cách trả lời; câu trả lời đúng nằm ở tin kế tiếp nếu mình đã sửa.</div>','high');
+   return aiWrap(m,'<div class="box warn"><div class="bt">'+ICON.edit+'Sai chỗ nào? '+n(6)+'</div>Nói cụ thể giúp mình: sai khái niệm, sai mã mục, hay thiếu căn cứ?<textarea class="inline" data-fbfield="'+m.id+'" placeholder="Ví dụ: mình cần trung vị, không phải trung bình…">'+esc(STATE.fbDraft[m.id]||'')+'</textarea></div><div class="acts"><button class="btn pri sm" data-act="fb-send" data-mid="'+m.id+'">'+ICON.send+' Gửi góp ý</button></div>','low');}
+ }
+ return '';
+}
+function renderChat(scroll){const el=$('#chat');const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<50;el.innerHTML=STATE.chat.map(renderMsg).join('');if(scroll||atBottom)el.scrollTop=el.scrollHeight;}
+
+/* ---------- HÀNG CHỜ TA ---------- */
+function qAge(it){return Math.max(0,STATE.simMin-it.min);}
+function qStatus(it){
+ if(it.type==='faq'){if(it.status==='pending')return qAge(it)>STATE.timeoutMin?'Quá hạn duyệt · nhắc giảng viên':'Chờ TA duyệt';if(it.status==='published')return 'FAQ đã đăng';if(it.status==='rejected')return 'FAQ bị từ chối';}
+ if(it.status==='answered')return 'Đã trả lời';
+ if(it.status==='done')return 'Đã xử lý';
+ if(qAge(it)>STATE.timeoutMin)return 'Quá hạn · nhắc giảng viên';
+ return inHours()?'Chờ trả lời':'Ngoài giờ TA · chờ 08:00';
+}
+function qPill(it){const s=qStatus(it);const cls=/Quá hạn/.test(s)?'p-bad':/Ngoài giờ/.test(s)?'p-warn':/Đã/.test(s)||/đăng/.test(s)?'p-ok':it.type==='faq'?'p-mag':'p-info';return '<span class="pill '+cls+'">'+s+'</span>';}
+function addQueue(type,q,extra){const id='Q-'+(STATE.queueSeq++);const it=Object.assign({id,type,min:STATE.simMin,student:'HV-27 (dựng)',q,status:type==='faq'?'pending':'open',reply:null,flag:null},extra||{});STATE.queue.unshift(it);checkTimeouts();return it;}
+function checkTimeouts(){STATE.queue.forEach(it=>{if((it.status==='open'||it.status==='pending')&&qAge(it)>STATE.timeoutMin&&!it.escalated){it.escalated=true;audit('hệ thống','Quá hạn '+it.id,'Đã nhắc giảng viên (mô phỏng) — '+qStatus(it),'sys');}});}
+function taDisplayList(){
+ let list=STATE.queue.slice();
+ const f=STATE.taView;
+ if(f==='open')list=list.filter(q=>q.status==='open'||q.status==='pending');
+ if(f==='night')list=list.filter(q=>!inHours()&&(q.status==='open'||q.status==='pending'));
+ if(f==='over')list=list.filter(q=>/Quá hạn/.test(qStatus(q)));
+ if(f==='faq')list=list.filter(q=>q.type==='faq'&&q.status==='pending');
+ if(f==='done')list=list.filter(q=>['answered','done','published','rejected'].includes(q.status));
+ if(STATE.taSearch){const s=STATE.taSearch.toLowerCase();list=list.filter(q=>(q.q+' '+(q.summary||'')+' '+q.id+' '+(q.a||'')).toLowerCase().includes(s));}
+ if(STATE.taSort==='new')list.sort((a,b)=>b.min-a.min);
+ else if(STATE.taSort==='old')list.sort((a,b)=>a.min-b.min);
+ else if(STATE.taSort==='manual'){}
+ else list.sort((a,b)=>{const rank=q=>(q.flag?0:/Quá hạn/.test(qStatus(q))?1:(q.status==='open'||q.status==='pending')?2:3);return rank(a)-rank(b)||b.min-a.min;});
+ return list;
+}
+function renderTA(){
+ const open=STATE.queue.filter(q=>q.status==='open').length,pend=STATE.queue.filter(q=>q.type==='faq'&&q.status==='pending').length,over=STATE.queue.filter(q=>/Quá hạn/.test(qStatus(q))).length,done=STATE.queue.filter(q=>q.status==='answered'||q.status==='done'||q.status==='published'||q.status==='rejected').length;
+ $('#taStats').innerHTML=[['--indigo',open,'Câu chờ trả lời'],['--magenta',pend,'FAQ chờ duyệt'],['--bad',over,'Quá hạn'],['--ok',done,'Đã xử lý']].map((t,i)=>'<div class="tile" style="--tc:var('+t[0]+');animation-delay:'+(i*60)+'ms"><div class="tv">'+t[1]+'</div><div class="tl">'+t[2]+'</div></div>').join('');
+ const views=[['all','Tất cả'],['open','Chờ xử lý'],['night','Ngoài giờ'],['over','Quá hạn'],['faq','FAQ chờ duyệt'],['done','Đã xong']];
+ $('#taViews').innerHTML=views.map(v=>'<button class="chip'+(STATE.taView===v[0]?' on':'')+'" data-act="ta-view" data-view="'+v[0]+'">'+v[1]+'</button>').join('');
+ let list=taDisplayList();
+ $('#taBadge').textContent=STATE.queue.filter(q=>q.status==='open'||q.status==='pending').length;
+ const sel=STATE.selected;
+ $('#bulkBar').classList.toggle('hidden',sel.size===0);
+ $('#bulkCount').textContent='Đã chọn '+sel.size+' mục:';
+ if(!list.length){$('#taList').innerHTML='<div class="empty">Không có mục nào khớp bộ lọc. Đổi view hoặc xoá ô tìm.</div>';return;}
+ $('#taList').innerHTML=list.map(it=>{
+  const overdue=/Quá hạn/.test(qStatus(it));
+  let acts='';
+  if(it.type==='faq'&&it.status==='pending')acts='<button class="btn ok sm" data-act="faq-approve" data-id="'+it.id+'">'+ICON.check+' Duyệt đăng</button><button class="btn danger sm" data-act="faq-reject" data-id="'+it.id+'">'+ICON.x+' Từ chối</button>';
+  else if(it.type==='question'&&it.status==='open')acts='<button class="btn pri sm" data-act="ta-reply-open" data-id="'+it.id+'">'+ICON.edit+' Trả lời</button><button class="btn sm" data-act="ta-escalate" data-id="'+it.id+'">'+ICON.flag+' Chuyển giảng viên</button><button class="btn sm ghost" data-act="ta-done" data-id="'+it.id+'">Đánh dấu xong</button>';
+  let reply='';
+  if(STATE.openReply===it.id)reply='<textarea class="inline" data-replyfield="'+it.id+'" placeholder="TA trả lời học viên — lời này sẽ hiện trong khung chat học viên…">'+esc(STATE.replyDraft[it.id]||'')+'</textarea><div class="qacts"><button class="btn ok sm" data-act="ta-reply-send" data-id="'+it.id+'">'+ICON.send+' Gửi trả lời</button><button class="btn ghost sm" data-act="ta-reply-cancel" data-id="'+it.id+'">Huỷ</button></div>';
+  if(it.reply)reply='<div class="qreply"><b>TA đã trả lời'+(it.replyAt?' · '+it.replyAt:'')+':</b> '+esc(it.reply)+'</div>';
+  return '<div class="qcard'+(it.flag?' flag':'')+(overdue?' overdue':'')+'" data-qid="'+it.id+'">'+
+   '<div class="qhead"><span class="drag" draggable="true" data-drag="'+it.id+'" title="Kéo để đổi thứ tự">'+ICON.drag+'</span><input type="checkbox" class="qcheck" data-act="ta-select" data-id="'+it.id+'"'+(sel.has(it.id)?' checked':'')+' aria-label="Chọn '+it.id+'"><span class="qid">'+it.id+'</span><span class="qt">'+timeStr(it.min)+' · '+esc(it.student)+'</span>'+(it.flag?'<span class="pill p-mag">'+ICON.flag+' '+esc(it.flag)+'</span>':'')+qPill(it)+'</div>'+
+   '<div class="qbody"><b>'+(it.type==='faq'?'FAQ đề xuất: ':'Câu hỏi: ')+esc(it.q)+'</b></div>'+
+   (it.type==='faq'?'<div class="preview">'+esc(it.a||'')+'</div>'+(it.src?evLine(it.src):''):'')+
+   (it.summary?'<div class="qsum"><b>AI tóm tắt sẵn:</b> '+esc(it.summary)+'</div>':'')+
+   reply+'<div class="qacts">'+acts+'</div></div>';
+ }).join('');
+}
+
+/* ---------- NGỮ CẢNH HỌC VIÊN ---------- */
+function renderCtx(){
+ const rem=COURSE.bt3Deadline-STATE.simMin;
+ const cd=rem>0?'còn '+Math.floor(rem/60)+' giờ '+String(rem%60).padStart(2,'0')+' phút':'ĐÃ HẾT HẠN';
+ const inside=inHours();
+ const openCount=STATE.queue.filter(q=>q.status==='open'||q.status==='pending').length;
+ $('#ctx').innerHTML=
+ '<div class="card"><h3>'+ICON.book+' Khoá học <span class="n">7</span></h3>'+
+  '<div class="kv"><span>'+COURSE.name+'</span></div>'+
+  '<div style="margin:7px 0">'+[1,2,3,4,5,6,7,8,9,10].map(i=>'<span class="sess'+(COURSE.open.includes(i)?' open':'')+(i===COURSE.cur?' cur':'')+'" title="'+(COURSE.open.includes(i)?'đã mở':'chưa mở')+'">'+i+'</span>').join('')+'</div>'+
+  '<div class="kv"><span>Buổi đang học</span><span class="v">3 · Thống kê mô tả</span></div>'+
+  '<div class="kv"><span>Công cụ</span><span class="v">Bảng tính</span></div>'+
+  '<div class="cap" style="margin-top:10px"><div class="yes"><b>Mình làm được</b><ul><li>Giảng kèm mã mục §</li><li>Hỏi lại khi mơ hồ</li><li>Gợi ý bước đầu (có duyệt)</li><li>Chuyển TA / soạn FAQ</li></ul></div><div class="no"><b>Mình không làm</b><ul><li>Đáp số bài đang mở</li><li>Nhận xét năng lực</li><li>Nói "đã báo" khi chưa</li><li>Kể buổi chưa mở</li></ul></div></div></div>'+
+ '<div class="card"><h3>'+ICON.clock+' Bài tập 3 · đang mở</h3><div class="countdown">'+cd+'</div>'+
+  '<div class="kv"><span>Hạn (trang khoá học)</span><span class="v">13/11 · 23:59</span></div>'+
+  '<div class="kv"><span>Bài 2</span><span class="v"><button class="cite" data-act="evidence" data-src="bt2">hết hạn · đáp án 6</button></span></div>'+
+  '<div style="margin-top:8px"><span class="pill p-mag">Luật cứng: không đáp số khi bài mở</span></div></div>'+
+ '<div class="card"><h3>'+ICON.user+' TA &amp; hàng chờ</h3>'+
+  '<div class="kv"><span>Giờ TA</span><span class="v">08:00–22:00</span></div>'+
+  '<div class="kv"><span>Hiện tại</span><span class="v">'+(inside?'<span class="pill p-ok">đang trực</span>':'<span class="pill p-warn">ngoài giờ · chờ 08:00</span>')+'</span></div>'+
+  '<div class="kv"><span>Hàng chờ</span><span class="v"><button class="cite" data-act="screen" data-screen="ta">'+openCount+' mục → mở phía TA</button></span></div></div>'+
+ '<div class="card"><h3>'+ICON.book+' FAQ cả lớp</h3><div id="faqList">'+(STATE.faq.length?STATE.faq.map(f=>'<div class="faqitem"><b>'+esc(f.q)+'</b><div class="fa">'+esc(f.a)+'</div><div class="fm">'+evLine(f.src)+'<span>'+f.views+' lượt xem (dựng) · '+esc(f.by)+'</span><button class="btn sm danger" style="margin-left:auto" data-act="faq-remove-direct" data-id="'+f.id+'">'+ICON.trash+' Gỡ</button></div></div>').join(''):'<div class="empty" style="padding:14px">Chưa có mục FAQ nào được duyệt.</div>')+'</div></div>';
+}
+
+/* ---------- RAIL ---------- */
+function renderToolRows(){
+ $('#toolRows').innerHTML=Object.keys(STATE.autonomy).map(t=>'<div class="toolrow"><div><code>'+t+'</code><span class="why">'+TOOL_WHY[t]+'</span></div><select class="sel" data-tool="'+t+'" aria-label="Mức tự chủ '+t+'">'+Object.keys(LEVELS).map(k=>'<option value="'+k+'"'+(lvl(t)===k?' selected':'')+'>'+LEVELS[k]+'</option>').join('')+'</select></div>').join('');
+ $$('#toolRows select').forEach(s=>s.addEventListener('change',()=>{STATE.autonomy[s.dataset.tool]=s.value;audit(s.dataset.tool,'Đổi mức tự chủ','→ '+LEVELS[s.value]);renderChat();renderTA();renderCtx();toast('Đã đổi mức '+s.dataset.tool+' → '+LEVELS[s.value]+' — áp dụng ngay vào ca đang mở');}));
+}
+const LEGEND=[
+ [1,'G1 + G2','Nhãn "Trợ lý AI" và chip độ chắc định tính trên mỗi tin — không hứa quá khả năng.'],
+ [2,'G11 + PAIR Explainability','Dòng "Dựa vào" bấm được: mở ngăn kéo trích nguyên văn tài liệu / trang khoá học.'],
+ [3,'G10','Thẻ hỏi lại một câu khi mơ hồ (S2, ca lạ) thay vì đoán; ngưỡng tự tin quyết định hỏi hay đoán-có-báo.'],
+ [4,'G8 + G9','Thẻ duyệt trước khi gửi (gợi ý / FAQ / chuyển TA), nút thu hồi, sửa ngay trên thẻ.'],
+ [5,'PAIR Errors + Graceful Failure','Đường chuyển người thật kèm tóm tắt; biên nhận nói rõ giờ TA, không hứa suông.'],
+ [6,'G15','"Sai chỗ nào?" mở ô góp ý ngay trong tin; góp ý vào nhật ký.'],
+ [7,'G1','Thẻ "Mình làm được / không làm" ở cột ngữ cảnh — phạm vi nhìn thấy trước khi hỏi.']
+];
+function renderLegend(){$('#annLegend').innerHTML=LEGEND.map(l=>'<li><span class="n">'+l[0]+'</span><span><b>'+l[1]+'</b> — '+l[2]+'</span></li>').join('');}
+function renderScenarios(){
+ const f=STATE.scFilter;
+ $('#scFilters').innerHTML=[['all','Tất cả'],['①','① Nguồn'],['②','② Mơ hồ'],['③','③ Thẩm quyền'],['④','④ Domain'],['exp','★ Đắt nhất']].map(c=>'<button class="chip'+(f.cls===c[0]?' on':'')+'" data-act="sc-filter" data-cls="'+c[0]+'">'+c[1]+'</button>').join('');
+ let list=SCENARIOS.slice();
+ if(f.cls==='exp')list=list.filter(s=>s.expensive);else if(f.cls!=='all')list=list.filter(s=>s.cls.includes(f.cls));
+ if(f.harm!=='all')list=list.filter(s=>s.harm===f.harm);
+ if(f.q){const q=f.q.toLowerCase();list=list.filter(s=>(s.msg+' '+s.fail+' '+s.good+' '+s.tool+' '+s.id).toLowerCase().includes(q));}
+ const harmRank={'không chấp nhận được':0,'sửa được':1,'nhẹ':2};
+ if(f.sort==='harm')list.sort((a,b)=>harmRank[a.harm]-harmRank[b.harm]);
+ else if(f.sort==='cls')list.sort((a,b)=>a.cls[0].localeCompare(b.cls[0]));
+ $('#scCount').textContent=list.length+'/'+SCENARIOS.length+' kịch bản';
+ $('#scList').innerHTML=list.length?list.map(s=>{
+  if(STATE.editScenario===s.id)return '<div class="scrow" data-id="'+s.id+'"><input type="text" class="inline" style="margin:0" data-editfield="'+s.id+'" value="'+esc(s.msg)+'"><div class="m" style="margin-top:6px"><button class="btn sm ok" data-act="sc-save" data-id="'+s.id+'">Lưu</button><button class="btn sm ghost" data-act="sc-cancel">Huỷ</button></div></div>';
+  const harmCls=s.harm==='không chấp nhận được'?'p-bad':s.harm==='sửa được'?'p-warn':'p-dim';
+  return '<div class="scrow'+(STATE.activeScenario===s.id?' active':'')+'" data-act="run" data-id="'+s.id+'" title="'+esc(s.fail)+'"><div class="t">'+(s.expensive?'<span class="star">★</span> ':'')+esc(s.msg)+'</div><div class="m">'+s.cls.map(c=>'<span class="pill p-info" style="font-size:10px;padding:0 6px">'+c+'</span>').join('')+'<span class="pill '+harmCls+'" style="font-size:10px;padding:0 6px">'+s.harm+'</span><code style="font-size:10px">'+s.tool+'</code><span class="tools"><button class="mini" data-act="sc-edit" data-id="'+s.id+'" title="Sửa tin nhắn">'+ICON.edit+'</button><button class="mini del" data-act="sc-delete" data-id="'+s.id+'" title="Xoá kịch bản">'+ICON.trash+'</button></span></div></div>';
+ }).join(''):'<div class="empty">Không khớp bộ lọc.</div>';
+}
+function renderAudit(){$('#auditCount').textContent=STATE.audit.length+' mục';$('#auditList').innerHTML=STATE.audit.slice(0,60).map(a=>'<div class="arow '+a.kind+'"><span class="at">'+a.t+'</span> · <b>'+esc(a.tool)+'</b> ('+esc(a.level)+') — '+esc(a.action)+(a.detail?'<br><span style="color:var(--mut)">'+esc(a.detail)+'</span>':'')+'</div>').join('')||'<div class="empty">Chưa có quyết định nào.</div>';}
+
+/* ---------- CHẠY KỊCH BẢN & CA LẠ ---------- */
+function runScenario(id,immediate){const s=SCENARIOS.find(x=>x.id===id);if(!s)return;STATE.activeScenario=id;pushUser(s.msg);audit(s.tool,'Chạy kịch bản '+id,s.cls.join(' ')+' · '+s.harm);if(immediate){s.flow();}else{setTimeout(()=>{s.flow();renderScenarios();},380);}renderScenarios();}
+function classify(t){const s=t.toLowerCase();
+ if(/(bài\s*3|bt\s*3|bài tập 3)/.test(s)&&/(đáp án|đáp số|kết quả|ra số|bao nhiêu|tính hộ|giải hộ|chép|xác nhận|đúng không|đúng chưa|đúng k|nộp|\d+[.,]\d+)/.test(s))return 'S3';
+ if(/slide|trang\s*\d+/.test(s))return 'S4';
+ if(/buổi\s*(4|5|6|7|8|9|10)|p-?value|chưa học|xem trước/.test(s))return 'S7';
+ if(/faq|cả lớp|đăng lên/.test(s))return 'S5';
+ if(/dốt|ngu|kém|chán|không hợp|tệ quá|gà/.test(s))return 'S6';
+ if(/nộp hộ|nộp giùm|mã bạn|gia hạn/.test(s))return 'S10';
+ if(/bài\s*2|bt\s*2/.test(s))return 'S9';
+ if(/hạn|deadline|excel|hàm|bảng tính|stdev/.test(s))return 'S8';
+ if(/sai hướng|nhầm|không phải trung bình|sửa lại/.test(s))return 'S11';
+ if(/độ lệch|phương sai/.test(s))return 'S2';
+ if(/trung vị|trung bình/.test(s))return 'S1';
+ return null;}
+function runUnknown(text){
+ const sid=classify(text);
+ if(!sid&&/(xác nhận|chứng nhận|khẳng định).*(hiểu|nắm)|đã hiểu.*(chưa|không)|hiểu bài rồi/.test(text.toLowerCase())){
+  audit('hệ thống','Ca lạ → xác nhận đã hiểu','Không có tool xác nhận · từ chối mềm · tra cứu + chuyển TA nếu học viên muốn','sys');
+  pushAI('text',{conf:'none',ev:['3.1','3.2'],ann:[1,2,5],html:'<p>Mình <b>không thể xác nhận</b> bạn đã hiểu hay chưa, và mình không đánh giá năng lực của bạn. Cách chắc nhất là tự kiểm tra: thử giải thích lại bằng lời của mình sự khác nhau giữa trung vị và trung bình (§3.1, §3.2), rồi so với tài liệu.</p><p>Nếu muốn có người xác nhận, mình có thể chuyển câu này cho TA (TA trực 08:00–22:00; ngoài giờ sẽ chờ 08:00 sáng mai).</p>',acts:[{act:'handoff-quick',label:'Chuyển TA',topic:text.slice(0,120),summary:'Học viên xin xác nhận đã hiểu — ngoài thẩm quyền AI.',flag:null}]});
+  return;
+ }
+ if(sid){audit('hệ thống','Ca lạ → khớp kịch bản '+sid,text.slice(0,80),'sys');SCENARIOS.find(x=>x.id===sid).flow();return;}
+ audit('hệ thống','Ca lạ → đường an toàn','Không có căn cứ · không đoán · hỏi lại hoặc chuyển người','sys');
+ pushAI('text',{conf:'none',ev:[],ann:[3,5],html:'<p>Mình chưa tìm thấy căn cứ trong <b>tài liệu buổi 1–3 và trang khoá học</b> cho câu này. Mình <b>không đoán</b>. Hai đường đi:</p><p>1. Hỏi lại cho rõ để mình khoanh đúng khái niệm. 2. Chuyển người thật — TA trực 08:00–22:00, ngoài giờ xếp hàng chờ tới 08:00 sáng mai và nói rõ điều đó.</p>',acts:[{act:'ca-clarify',label:'Hỏi lại cho rõ',cls:'pri'},{act:'handoff-quick',label:'Chuyển TA',topic:text.slice(0,120),summary:'Ca lạ — không có căn cứ trong tài liệu buổi 1–3. Cần người thật.',flag:null}]});
+}
+function sendChat(text){if(!text.trim())return;pushUser(text.trim());audit('hệ thống','Tin người dùng',text.slice(0,80),'sys');setTimeout(()=>runUnknown(text.trim()),380);}
+
+/* ---------- HÀNH ĐỘNG ---------- */
+function findMsg(mid){return STATE.chat.find(m=>m.id===mid);}
+function publishFaq(draft,byTA,mid){const id='F-'+String(STATE.faqSeq++).padStart(2,'0');const f={id,q:draft.q,a:draft.a,src:draft.src||[],views:0,min:STATE.simMin,by:byTA?'TA Lan · duyệt '+timeStr():'AI đăng ngay (mức Tự làm)'};STATE.faq.unshift(f);if(mid){const m=findMsg(mid);if(m){m.data.done='published';m.data.faqId=id;m.data.byTA=byTA;}}audit('dang_FAQ',byTA?'TA duyệt đăng FAQ '+id:'Đăng ngay FAQ '+id,f.q);return f;}
+function removeFaq(id,mid){const i=STATE.faq.findIndex(f=>f.id===id);if(i<0)return;const f=STATE.faq.splice(i,1)[0];if(mid){const m=findMsg(mid);if(m)m.data.done='removed';}audit('dang_FAQ','Gỡ FAQ '+id,f.views+' lượt xem không thu hồi được');toastUndo('Đã gỡ FAQ "'+f.q.slice(0,40)+'…" — lượt đọc trước đó không lấy lại được',()=>{STATE.faq.splice(i,0,f);if(mid){const m=findMsg(mid);if(m){m.data.done='published';}}renderAll();});}
+function doHandoff(d,mid){const it=addQueue('question',d.topic,{summary:d.summary,flag:d.flag||null});if(mid){const m=findMsg(mid);if(m){m.data.done='sent';m.data.qid=it.id;}}else{pushAI('gate-handoff',{topic:d.topic,summary:d.summary,flag:d.flag||null,done:'sent',qid:it.id});}audit('chuyen_TA','Tạo hàng chờ '+it.id,d.topic+(inHours()?'':' · ngoài giờ → chờ 08:00'));return it;}
+function toast(msg,undoFn){const t=$('#toast');$('#toastMsg').textContent=msg;const u=$('#toastUndo');STATE.undo=undoFn||null;u.classList.toggle('hidden',!undoFn);t.classList.add('show');clearTimeout(STATE.toastTimer);STATE.toastTimer=setTimeout(()=>{t.classList.remove('show');STATE.undo=null;},8000);}
+function toastUndo(msg,fn){toast(msg,fn);}
+function openDrawer(src){const s=SOURCES[src];if(!s)return;$('#drawerTitle').textContent=s.title;$('#drawerBody').innerHTML='<div class="src">'+esc(s.from)+'</div><blockquote>'+esc(s.text)+'</blockquote>'+(s.suspect?'<div class="box warn sus"><div class="bt">'+ICON.alert+'Câu cần giảng viên kiểm</div>'+esc(s.suspect)+'</div>':'')+'<div class="box hold" style="margin-top:12px"><div class="bt">'+ICON.book+'Vì sao hiện ngăn kéo này</div>PAIR Explainability + Trust: tin đúng mức hơn tin tối đa — người học tự kiểm được nguyên văn thay vì tin lời AI.</div>';$('#drawer').classList.add('open');$('#scrim').classList.add('show');}
+function closeDrawer(){$('#drawer').classList.remove('open');$('#scrim').classList.remove('show');}
+function setScreen(s){STATE.screen=s;$('#studentScreen').classList.toggle('hidden',s!=='student');$('#taScreen').classList.toggle('hidden',s!=='ta');$('#tabStudent').classList.toggle('on',s==='student');$('#tabTA').classList.toggle('on',s==='ta');if(s==='ta')renderTA();}
+function applyTheme(){const t=STATE.theme;const eff=t==='auto'?(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):t;document.documentElement.dataset.theme=eff;$('#themeBtn').innerHTML=t==='dark'?ICON.moon:t==='light'?ICON.sun:ICON.auto;$('#themeBtn').title='Giao diện: '+t+' (bấm để đổi)';}
+function renderClock(){const inside=inHours();$('#clockText').textContent='13/11 · '+timeStr();$('#clockChip').classList.toggle('inside',inside);$('#taState').className='pill '+(inside?'p-ok':'p-warn');$('#taState').textContent=inside?'TA đang trực':'ngoài giờ TA';}
+function renderAll(){renderClock();renderChat();renderCtx();renderTA();renderScenarios();renderAudit();}
+
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-act]');if(!el)return;
+ const act=el.dataset.act;const mid=el.dataset.mid;const id=el.dataset.id;
+ if(act!=='run'&&el.closest('.scrow')&&act!=='sc-edit'&&act!=='sc-delete'&&act!=='sc-save'&&act!=='sc-cancel')return;
+ switch(act){
+  case 'screen':setScreen(el.dataset.screen);break;
+  case 'theme':STATE.theme=STATE.theme==='dark'?'light':STATE.theme==='light'?'auto':'dark';applyTheme();break;
+  case 'run':runScenario(id);break;
+  case 'evidence':openDrawer(el.dataset.src);break;
+  case 'drawer-close':closeDrawer();break;
+  case 'plus30':STATE.simMin=Math.min(1439,STATE.simMin+30);$('#clockSel').value=String(STATE.simMin);if(!$('#clockSel').querySelector('option[value="'+STATE.simMin+'"]')){const o=document.createElement('option');o.value=String(STATE.simMin);o.textContent=timeStr()+' · mô phỏng';$('#clockSel').appendChild(o);$('#clockSel').value=String(STATE.simMin);}checkTimeouts();audit('hệ thống','Mô phỏng trôi giờ','→ '+timeStr(),'sys');renderAll();break;
+  case 'clarify-pick':{const m=findMsg(mid);if(m){m.data.chosen=el.dataset.v;audit('tra_cuu_tai_lieu','Người học chọn làm rõ','S2 → '+el.dataset.v);renderChat();}break;}
+  case 'hint-approve':{const m=findMsg(mid);if(m){m.data.done='approved';audit('goi_y_bai_tap','Học viên duyệt gợi ý',m.data.sid+' · gửi sau duyệt');renderChat();}break;}
+  case 'hint-skip':{const m=findMsg(mid);if(m){m.data.done='skipped';audit('goi_y_bai_tap','Học viên bỏ qua gợi ý',m.data.sid);renderChat();}break;}
+  case 'hint-revoke':{const m=findMsg(mid);if(m){const prev=m.data.done;m.data.done='revoked';audit('goi_y_bai_tap','Thu hồi gợi ý',m.data.sid);toastUndo('Đã thu hồi gợi ý — nội dung đã chép thì không lấy lại được',()=>{m.data.done=prev==='revoked'?null:prev;renderChat();});renderChat();}break;}
+  case 'faq-send':{const m=findMsg(mid);if(m){const it=addQueue('faq',m.data.draft.q,{a:m.data.draft.a,src:m.data.draft.src,student:'HV-27 (dựng) · AI soạn'});m.data.done='queued';m.data.qid=it.id;audit('dang_FAQ','Gửi TA duyệt '+it.id,m.data.draft.q);renderAll();}break;}
+  case 'faq-edit':{const m=findMsg(mid);if(m){m.data.editing=true;renderChat();}break;}
+  case 'faq-cancel-edit':{const m=findMsg(mid);if(m){m.data.editing=false;renderChat();}break;}
+  case 'faq-save-edit':{const m=findMsg(mid);if(m){m.data.editing=false;const it=addQueue('faq',m.data.draft.q,{a:m.data.draft.a,src:m.data.draft.src,student:'HV-27 (dựng) · AI soạn'});m.data.done='queued';m.data.qid=it.id;audit('dang_FAQ','Sửa xong, gửi TA duyệt '+it.id,m.data.draft.q);renderAll();}break;}
+  case 'faq-skip':{const m=findMsg(mid);if(m){m.data.done='removed';audit('dang_FAQ','Bỏ mục FAQ','Không gửi duyệt');renderChat();}break;}
+  case 'faq-reopen':{const m=findMsg(mid);if(m){m.data.done=null;m.data.editing=true;renderChat();}break;}
+  case 'faq-remove':{const m=findMsg(mid);if(m&&m.data.faqId)removeFaq(m.data.faqId,mid);renderAll();break;}
+  case 'faq-remove-direct':removeFaq(id,null);renderAll();break;
+  case 'handoff-send':{const m=findMsg(mid);if(m)doHandoff(m.data,mid);renderAll();break;}
+  case 'handoff-skip':{const m=findMsg(mid);if(m){m.data.done='skipped';audit('chuyen_TA','Bỏ chuyển TA',m.data.topic);renderChat();}break;}
+  case 'handoff-quick':{pushHandoff({topic:el.dataset.topic||'Câu hỏi từ học viên',summary:el.dataset.summary||'',flag:el.dataset.flag||null});renderAll();break;}
+  case 'faq-publish':{const m=findMsg(mid);if(m){publishFaq(m.data.draft,false,mid);}renderAll();break;}
+  case 'handoff-now':{const m=findMsg(mid);if(m)doHandoff(m.data,mid);renderAll();break;}
+  case 'fb':{const m=findMsg(mid);if(!m)break;if(el.dataset.v==='up'){audit('hệ thống','Góp ý: đúng hướng',m.id,'sys');toast('Đã ghi nhận: câu trả lời đúng hướng.');}else{STATE.chat.push({id:nid(),role:'ai',kind:'fbthread',data:{note:null,src:mid}});renderChat(true);}break;}
+  case 'fb-send':{const m=findMsg(mid);if(m){const note=(STATE.fbDraft[mid]||'').trim()||'(không ghi chi tiết)';m.data.note=note;STATE.feedback.push({t:timeStr(),mid,note});audit('hệ thống','Góp ý chi tiết (G15)',note,'sys');const src=findMsg(m.data.src);pushAI('text',{conf:'high',ev:['3.2'],ann:[4,6],html:'<p>Cảm ơn bạn — mình ghi nhận: <b>'+esc(note)+'</b>. Mình trả lời lại theo đúng khái niệm bạn cần, kèm mã mục; góp ý này vào nhật ký để chỉnh cách trả lời.</p>'});renderChat(true);}break;}
+  case 'ca-clarify':pushAI('clarify',{sid:'CA',chosen:null});break;
+  case 'ca-run':{const inp=$('#caInput');const t=inp.value.trim();if(!t){toast('Gõ một ca lạ trước đã.');break;}pushUser(t);audit('hệ thống','Ca lạ (demo)',t.slice(0,80),'sys');if($('#caSave').checked){const sid='U'+(++STATE.userSeq);SCENARIOS.push({id:sid,msg:t,cls:['②'],harm:'sửa được',tool:'(ca lạ)',conf:50,fail:'Ca lạ do người demo đưa — chưa có căn cứ trong tài liệu.',good:'Đường an toàn: không đoán; hỏi lại hoặc chuyển người thật.',flow(){runUnknown(t);}});audit('hệ thống','Lưu ca lạ thành kịch bản '+sid,t.slice(0,60),'sys');}setTimeout(()=>{runUnknown(t);renderScenarios();},380);inp.value='';renderScenarios();break;}
+  case 'sc-filter':STATE.scFilter.cls=el.dataset.cls;renderScenarios();break;
+  case 'sc-edit':STATE.editScenario=id;renderScenarios();break;
+  case 'sc-cancel':STATE.editScenario=null;renderScenarios();break;
+  case 'sc-save':{const s=SCENARIOS.find(x=>x.id===id);const inp=document.querySelector('[data-editfield="'+id+'"]');if(s&&inp&&inp.value.trim()){s.msg=inp.value.trim();audit('hệ thống','Sửa kịch bản '+id,s.msg.slice(0,60),'sys');}STATE.editScenario=null;renderScenarios();break;}
+  case 'sc-delete':{const i=SCENARIOS.findIndex(x=>x.id===id);if(i<0)break;const s=SCENARIOS.splice(i,1)[0];audit('hệ thống','Xoá kịch bản '+id,s.msg.slice(0,60),'sys');toastUndo('Đã xoá kịch bản '+id,()=>{SCENARIOS.splice(i,0,s);renderScenarios();});renderScenarios();break;}
+  case 'ta-view':STATE.taView=el.dataset.view;renderTA();break;
+  case 'ta-select':{if(el.checked)STATE.selected.add(id);else STATE.selected.delete(id);renderTA();break;}
+  case 'bulk-clear':STATE.selected.clear();renderTA();break;
+  case 'bulk-approve':{let c=0;STATE.selected.forEach(qid=>{const it=STATE.queue.find(q=>q.id===qid);if(it&&it.type==='faq'&&it.status==='pending'){it.status='published';const f=publishFaq({q:it.q,a:it.a,src:it.src||[]},true,null);it.faqId=f.id;c++;pushSys('FAQ <b>'+esc(it.id)+'</b> đã được TA duyệt và đăng lên cả lớp.');}});STATE.selected.clear();audit('dang_FAQ','Duyệt hàng loạt '+c+' FAQ','');renderAll();break;}
+  case 'bulk-done':{STATE.selected.forEach(qid=>{const it=STATE.queue.find(q=>q.id===qid);if(it&&(it.status==='open'))it.status='done';});audit('hệ thống','Đánh dấu xong hàng loạt',STATE.selected.size+' mục','sys');STATE.selected.clear();renderAll();break;}
+  case 'bulk-delete':{const removed=[];STATE.queue=STATE.queue.filter(q=>{if(STATE.selected.has(q.id)){removed.push(q);return false;}return true;});STATE.selected.clear();audit('hệ thống','Xoá hàng loạt khỏi hàng chờ',removed.length+' mục','sys');toastUndo('Đã xoá '+removed.length+' mục khỏi hàng chờ',()=>{STATE.queue=removed.concat(STATE.queue);renderAll();});renderAll();break;}
+  case 'faq-approve':{const it=STATE.queue.find(q=>q.id===id);if(it&&it.status==='pending'){it.status='published';const f=publishFaq({q:it.q,a:it.a,src:it.src||[]},true,null);it.faqId=f.id;const gm=STATE.chat.find(m=>m.kind==='gate-faq'&&m.data.qid===id);if(gm){gm.data.done='published';gm.data.faqId=f.id;gm.data.byTA=true;}pushSys('FAQ <b>'+esc(id)+'</b> đã được TA duyệt và đăng lên cả lớp.');audit('dang_FAQ','TA duyệt '+id,it.q);renderAll();}break;}
+  case 'faq-reject':{const it=STATE.queue.find(q=>q.id===id);if(it){it.status='rejected';it.rejectReason='Diễn đạt dễ hiểu thành đáp số bài đang mở — sửa thành hướng khái niệm rồi gửi lại.';const gm=STATE.chat.find(m=>m.kind==='gate-faq'&&m.data.qid===id);if(gm){gm.data.done='rejected';gm.data.rejectReason=it.rejectReason;}pushSys('TA từ chối FAQ <b>'+esc(id)+'</b>: '+esc(it.rejectReason));audit('dang_FAQ','TA từ chối '+id,it.rejectReason);renderAll();}break;}
+  case 'ta-reply-open':STATE.openReply=id;renderTA();break;
+  case 'ta-reply-cancel':STATE.openReply=null;renderTA();break;
+  case 'ta-reply-send':{const it=STATE.queue.find(q=>q.id===id);const txt=(STATE.replyDraft[id]||'').trim();if(it&&txt){it.status='answered';it.reply=txt;it.replyAt=timeStr();STATE.openReply=null;pushTA(txt,id);audit('chuyen_TA','TA trả lời '+id,txt.slice(0,70),'auto');toast('Đã gửi trả lời của TA vào khung chat học viên.');renderAll();}else toast('Viết câu trả lời trước đã.');break;}
+  case 'ta-escalate':{const it=STATE.queue.find(q=>q.id===id);if(it){it.flag=it.flag||'chuyển giảng viên';it.status='done';audit('chuyen_TA','Chuyển giảng viên '+id,it.q,'sys');pushSys('Câu <b>'+esc(id)+'</b> đã chuyển giảng viên (cờ ưu tiên).');renderAll();}break;}
+  case 'ta-done':{const it=STATE.queue.find(q=>q.id===id);if(it){it.status='done';audit('hệ thống','Đánh dấu xong '+id,'','sys');renderAll();}break;}
+  case 'undo':{if(STATE.undo){const fn=STATE.undo;STATE.undo=null;$('#toast').classList.remove('show');fn();renderAll();}break;}
+  case 'export':{const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),simTime:'13/11/2026 '+timeStr(),autonomy:STATE.autonomy,threshold:STATE.threshold,timeoutMin:STATE.timeoutMin,chat:STATE.chat.map(m=>({role:m.role,kind:m.kind,data:m.data})),queue:STATE.queue,faq:STATE.faq,audit:STATE.audit,feedback:STATE.feedback},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lab5-t2-trang-thai-'+timeStr().replace(':','')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);audit('hệ thống','Xuất JSON trạng thái','Bằng chứng cấu hình + nhật ký','sys');toast('Đã xuất JSON — bằng chứng cho spec §5.');break;}
+  case 'reset':{resetState();toast('Đã khôi phục dữ liệu gốc ban đầu.');break;}
+ }
+});
+document.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.id==='threshold'){STATE.threshold=+t.value;$('#thVal').textContent=t.value;renderChat();}
+ if(t.id==='timeout'){STATE.timeoutMin=Math.max(5,Math.min(180,+t.value||30));checkTimeouts();renderTA();renderCtx();}
+ if(t.id==='scSearch'){STATE.scFilter.q=t.value;renderScenarios();}
+ if(t.id==='taSearch'){STATE.taSearch=t.value;renderTA();}
+ if(t.dataset.faqfield){const m=findMsg(t.dataset.mid);if(m)m.data.draft[t.dataset.faqfield]=t.value;}
+ if(t.dataset.fbfield){STATE.fbDraft[t.dataset.fbfield]=t.value;}
+ if(t.dataset.replyfield){STATE.replyDraft[t.dataset.replyfield]=t.value;}
+});
+document.addEventListener('change',e=>{
+ const t=e.target;
+ if(t.id==='clockSel'){STATE.simMin=+t.value;checkTimeouts();audit('hệ thống','Đổi giờ mô phỏng','→ '+timeStr(),'sys');renderAll();}
+ if(t.id==='scSort'){STATE.scFilter.sort=t.value;renderScenarios();}
+ if(t.id==='scHarm'){STATE.scFilter.harm=t.value;renderScenarios();}
+ if(t.id==='taSort'){STATE.taSort=t.value;renderTA();}
+ if(t.id==='annToggle'){STATE.ann=t.checked;document.body.classList.toggle('hide-n',!t.checked);}
+});
+$('#composer').addEventListener('submit',e=>{e.preventDefault();const inp=$('#msgInput');sendChat(inp.value);inp.value='';});
+document.addEventListener('dragstart',e=>{const h=e.target.closest('[data-drag]');if(!h)return;STATE.dragId=h.dataset.drag;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',STATE.dragId);}catch(_){}
+ if(STATE.taSort!=='manual'){const vis=taDisplayList();const ids=new Set(vis.map(q=>q.id));STATE.queue=vis.concat(STATE.queue.filter(q=>!ids.has(q.id)));STATE.taSort='manual';$('#taSort').value='manual';}
+ const card=h.closest('.qcard');if(card)card.classList.add('dragging');});
+document.addEventListener('dragend',e=>{$$('.qcard.dragging').forEach(c=>c.classList.remove('dragging'));STATE.dragId=null;});
+document.addEventListener('dragover',e=>{const card=e.target.closest('.qcard');if(card&&STATE.dragId){e.preventDefault();e.dataTransfer.dropEffect='move';}});
+document.addEventListener('drop',e=>{const card=e.target.closest('.qcard');if(!card||!STATE.dragId)return;e.preventDefault();const target=card.dataset.qid;if(target===STATE.dragId)return;const from=STATE.queue.findIndex(q=>q.id===STATE.dragId);const to=STATE.queue.findIndex(q=>q.id===target);if(from<0||to<0)return;const [it]=STATE.queue.splice(from,1);STATE.queue.splice(to,0,it);STATE.taSort='manual';$('#taSort').value='manual';audit('hệ thống','Kéo đổi thứ tự hàng chờ',it.id+' → vị trí '+to+' (chuyển sang sắp xếp thủ công)','sys');STATE.dragId=null;renderTA();});
+
+/* ---------- SEED & KHỞI TẠO ---------- */
+function seed(){
+ STATE.chat=[];MID=0;
+ STATE.chat.push({id:nid(),role:'ai',kind:'welcome',data:{}});
+ STATE.chat.push({id:nid(),role:'user',kind:'text',data:{text:SCENARIOS[0].msg,t:'22:41'}});
+ STATE.chat.push({id:nid(),role:'ai',kind:'text',data:{conf:'high',ev:['3.1','3.2','3.4'],ann:[1,2],fb:true,html:'<p><b>Trung bình cộng</b> (§3.1) = tổng các giá trị chia cho số giá trị — bị kéo mạnh bởi giá trị ngoại lai. <b>Trung vị</b> (§3.2) = giá trị đứng giữa sau khi sắp xếp tăng dần; dãy chẵn phần tử thì lấy trung bình cộng của hai giá trị giữa.</p><p>Khi nào dùng: dữ liệu lệch như thu nhập, giá nhà → trung vị ít bị kéo hơn (§3.2). Ví dụ: một phòng có người lương rất cao thì trung bình bị kéo lên, trung vị vẫn đứng giữa.</p>'}});
+ STATE.queue=[
+  {id:'Q-1042',type:'question',min:1352,student:'HV-27 (dựng)',q:'Bài 3 câu a: em tính trung bình 15.25, trung vị 11.5 — câu b chọn con số nào ạ?',summary:'Bài đang mở · không xác nhận đáp số. Gợi ý bước đầu đã gửi (có duyệt). Học viên hỏi thêm trước hạn 23:59.',flag:null,status:'open',reply:null},
+  {id:'Q-1041',type:'faq',min:1355,student:'HV-12 (dựng) · AI soạn',q:'Trung vị của dãy chẵn phần tử tính thế nào?',a:'Sắp xếp tăng dần, lấy trung bình cộng của hai giá trị đứng giữa (§3.2).',src:['3.2'],status:'pending',reply:null,flag:null},
+  {id:'Q-1040',type:'question',min:1180,student:'HV-08 (dựng)',q:'Slide 12 buổi 3 nói độ lệch chuẩn luôn nhỏ hơn phương sai — em áp dữ liệu [0,1] thấy ngược lại?',summary:'Không có slide đánh số; ý ở §3.3. Câu "luôn nhỏ hơn" cần giảng viên kiểm (phương sai < 1 thì ngược lại).',flag:'nghi lỗi tài liệu §3.3',status:'answered',reply:'Tài liệu buổi 3 không có slide đánh số. Câu trong §3.3 chỉ đúng khi phương sai ≥ 1; mình đã báo giảng viên xem lại. Em cứ hiểu theo định nghĩa căn bậc hai.',replyAt:'20:05'}
+ ];
+ STATE.queueSeq=1043;STATE.faqSeq=2;
+ STATE.faq=[{id:'F-01',q:'Khi nào dùng trung vị thay trung bình?',a:'Khi dữ liệu lệch hoặc có giá trị ngoại lai (thu nhập, giá nhà) — trung vị ít bị kéo hơn (§3.2, §3.4).',src:['3.2','3.4'],views:12,min:1100,by:'TA Lan · duyệt 12/11'}];
+ STATE.audit=[
+  {t:'22:41',tool:'tra_cuu_tai_lieu',level:'Tự làm',action:'Đọc §3.1–§3.2 trả lời khái niệm',detail:'Chỉ đọc · kèm mã mục',kind:'auto'},
+  {t:'22:40',tool:'goi_y_bai_tap',level:'Cần người duyệt',action:'Chặn xác nhận đáp số Bài 3',detail:'Bài đang mở — luật cứng',kind:'ask'},
+  {t:'22:39',tool:'hệ thống',level:'—',action:'Khởi tạo ca tối muộn',detail:'13/11 22:47 · ngoài giờ TA · hạn BT3 còn 72 phút',kind:'sys'}
+ ];
+ STATE.feedback=[];STATE.selected.clear();STATE.activeScenario=null;STATE.openReply=null;STATE.replyDraft={};STATE.fbDraft={};STATE.editScenario=null;
+}
+function resetState(){STATE.simMin=1367;STATE.autonomy={tra_cuu_tai_lieu:'auto',goi_y_bai_tap:'ask',chuyen_TA:'auto',dang_FAQ:'ask'};STATE.threshold=70;STATE.timeoutMin=30;STATE.scFilter={q:'',cls:'all',harm:'all',sort:'id'};STATE.taView='all';STATE.taSearch='';STATE.taSort='prio';$('#threshold').value=70;$('#thVal').textContent='70';$('#timeout').value=30;$('#clockSel').value='1367';$('#scSearch').value='';$('#scHarm').value='all';$('#taSearch').value='';$('#taSort').value='prio';seed();renderToolRows();renderAll();audit('hệ thống','Khôi phục gốc','Cấu hình + dữ liệu ban đầu','sys');}
+function init(){
+ seed();renderToolRows();renderLegend();applyTheme();renderAll();
+ if(window.matchMedia){matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>{if(STATE.theme==='auto')applyTheme();});}
+ const h=location.hash.replace('#','');
+ if(h==='ta')setScreen('ta');
+ const rm=h.match(/run=([SU]\d+)/);
+ if(rm){const c=$('#chat');c.style.scrollBehavior='auto';runScenario(rm[1],true);c.scrollTop=c.scrollHeight;requestAnimationFrame(()=>{c.style.scrollBehavior='';});}
+}
+init();
+</script>
+</body>
+</html>
