@@ -6,7 +6,18 @@
 
 ```markdown
 # Bài nộp LAB5 — [Track] · Nhóm [tên]
-[Danh sách thành viên và việc mỗi người làm — copy bảng từ README]
+
+## Thành viên nhóm
+
+Bài nộp cần **danh sách thành viên** và **mỗi người làm gì**. Nhóm tự chia việc, không bắt buộc theo vai trò cố định. Ví dụ một cách chia (không bắt buộc): dựng prototype, viết câu chữ AI, giữ bảng kịch bản và kịch bản demo.
+
+**Lớp:** ____ · **Bàn / zone:** ____ · **Track:** ____
+
+| Họ và Tên | Mã Học Viên | Việc đã làm |
+|---|---|---|
+|  |  |  |
+|  |  |  |
+|  |  |  |
 
 ## §1. Lát cắt & phạm vi
 - Lát cắt (chép từ track).
