@@ -5,9 +5,9 @@
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-| Lê Quý Toàn | 2A202603941 | Viết `spec.md` §1–§7: bảng kịch bản, lập luận khi AI sai, mức tự chủ theo cost-of-error; câu chữ AI nguyên văn cho 11 kịch bản và các thẻ duyệt / biên nhận; dựng `prototype/index.html` màn học viên + màn TA với rail mức tự chủ áp dụng sống, nhật ký quyết định, chú thích HAX/PAIR 1–7; ảnh đánh số `anh-1.png`, `anh-2.png`; kiểm thử bấm end-to-end desktop/tablet/mobile |
-| Vũ Lương Duy | 2A202603945 | Người B: phản biện và sửa `spec.md` §3–§4 (tách ba nhánh "ai được báo", thêm loại lỗi người dùng/ngữ cảnh, viết lại lập luận tool khó xếp nhất `goi_y_bai_tap`, quy tắc `dang_FAQ` ngoài giờ TA); test bấm prototype ca S3/S4 và ca lạ, mở rộng bộ nhận ca S3 + thêm nhánh "xác nhận đã hiểu" trong `prototype/index.html`; chấm thử S4; chuẩn bị ca lạ và demo phần mức tự chủ |
-| Đàm Hồng Thái | 2A202603927 | Khởi tạo repo nhóm + `README.md`; dàn ý `spec.md` của nhóm; bảng phân công `3-tasks.md` (PR #1) |
+| Đàm Hồng Thái | 2A202603927 | **Người kịch bản** (mạnh viết, suy luận rủi ro) — giữ §1–§2: lát cắt & phạm vi, 11 kịch bản rủi ro phủ đủ 4 lớp ①②③④, lập luận chọn 2 kịch bản đắt nhất S3/S4; dựng ảnh đánh số `anh-1.png` (màn học viên, ca S3 từ đầu tới thẻ duyệt) |
+| Vũ Lương Duy | 2A202603945 | **Người quyết định** (mạnh lập luận, phản biện) — giữ §3–§4: khi AI sai người dùng thấy gì, quyết định hỏi lại / trả lời kèm giới hạn / chuyển người, loại lỗi, mức tự chủ theo cost-of-error, tool khó xếp nhất và thử mức; trả lời ca lạ tại demo (§7) |
+| Lê Quý Toàn | 2A202603941 | **Người prototype** (mạnh công cụ, UI) — giữ §5–§6: dựng `prototype/index.html` màn học viên + màn TA với rail mức tự chủ áp dụng sống và nhật ký quyết định, kiểm thử bấm end-to-end desktop/tablet/mobile; dựng ảnh đánh số `anh-2.png` (màn TA); map HAX/PAIR 1–7 vào màn hình; tiêu chí Pass/Fail và chấm thử thiết kế |
 
 ## §1. Lát cắt & phạm vi
 
