@@ -1,10 +1,6 @@
 # Bài làm của Người A — "Người kịch bản" (Track T2 Giáo dục)
 
 > **Vai trò A:** Viết **§1** (lát cắt & phạm vi) + **§2** (kịch bản rủi ro) · dựng **ảnh 1** prototype · demo phần lát cắt + ca khó #4.
->
-> **Lưu ý:** Tôi **không có file `tracks/t2-education.md`** — các chỗ cần lấy nguyên văn từ track được đánh dấu `[T2]` và A phải thay bằng nội dung thật trước khi nộp. Phần còn lại A viết được ngay.
-
----
 
 ## PHẦN 1 — §1 Lát cắt & phạm vi (viết vào `spec.md`)
 
