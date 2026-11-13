@@ -19,6 +19,9 @@
 
 ## §1. Lát cắt & phạm vi
 
+- **Lát cắt (chép từ track):** Trong **trợ lý học bài của trang khoá học (kiểu ChatGPT Study mode)**, khi **học viên** đang hỏi bài lúc tối muộn, khi không còn ai để hỏi, **AI giảng kèm trích tài liệu, hỏi lại cho rõ, gợi ý từng bước, hay nói thẳng "tài liệu không có, hỏi giảng viên"**, để học viên hiểu đúng bài mình đang học, không chép đáp án, không học sai mà không biết.
+- **3 việc tính năng KHÔNG làm:**
+
 | # | Việc KHÔNG làm | Vì sao — trỏ về track | Prototype: chỗ chứng minh |
 |---|---|---|---|
 | **1** | **Không đưa / không xác nhận đáp số bài đang mở** (BT3, hạn 13/11/2026 23:59 — Data B): học viên chép rồi thì không đảo được, giảng viên mất tín hiệu đánh giá thật. | **Data B** trong `[T2]`: BT3 đang mở, hạn **13/11/2026 23:59** — đây là **bài đang chấm**, không phải bài luyện. Đưa đáp số = học viên chép → **không đảo ngược** (đã nộp, giảng viên không biết trình độ thật). Đúng cái giá T2: *"học sai mà không biết"* + mất **tín hiệu đánh giá** của giảng viên. Nguyên tắc Study Mode: *"DO NOT DO THE USER'S WORK FOR THEM"* — không làm hộ, không đưa đáp án . | **S3, S5, S6**: chip **"Luật cứng · bài đang mở"**; **không tồn tại nút nào** đưa đáp số — kể cả khi học viên insist (đúng ca Study Mode thừa nhận có thể "quay lại trả lời trực tiếp nếu bị insist" ). |
