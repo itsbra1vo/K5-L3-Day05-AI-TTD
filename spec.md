@@ -1,7 +1,6 @@
 # Bài nộp LAB5 — T2 Giáo dục · Nhóm TTD
 
 **Lớp:** L3B · **Bàn / zone:** E305 · **Track:** T2
-**Repo nộp:** `K5-L3-Day05-T2-TTD` — repo công khai của nhóm, không fork repo đề · nhánh nộp: `2A202603941_LeQuyToan`.
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
